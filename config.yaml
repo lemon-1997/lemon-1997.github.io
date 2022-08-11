@@ -759,7 +759,7 @@ params:
     imgUploader: false
     wordLimit: 200
     requiredMeta: ['nick', 'mail']
-    serverURL: https://waline-lemon-1997.vercel.app/
+    serverURL: https://waline-blue-nu.vercel.app/
 
   # Artalk 评论插件
   # 更多配置信息请参考：https://artalk.js.org
