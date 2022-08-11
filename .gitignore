@@ -1,0 +1,6 @@
+public/
+resources/
+.hugo_build.lock
+*.exe
+.DS_Store
+.idea
