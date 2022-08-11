@@ -10,7 +10,6 @@ categories:
 - about
 tags:
 - lemon
-- go
 
 # 原文作者
 # Post's origin author name
