@@ -629,12 +629,12 @@ params:
   # 谷歌站点验证
   # Google Webmaster tools verification.
   # See: https://developers.google.com/search
-  googleSiteVerification: #<verify_code>
+  googleSiteVerification: 19jPRcdiucFsfVN_LkJa_II3EePlif78wI2cm8vi65c
 
   # 微软 Bing 站验证
   # Bing Webmaster tools verification.
   # See: https://www.bing.com/webmasters
-  bingSiteVerification: #<verify_code>
+  bingSiteVerification: 37EC8FD586311559FF6AEA11F04C324D
 
   # Yandex 站点验证
   # Yandex Webmaster tools verification.
@@ -644,7 +644,7 @@ params:
   # 百度站点验证
   # Baidu Webmaster tools verification.
   # See: https://ziyuan.baidu.com/site
-  baiduSiteVerification: #<verify_code>
+  baiduSiteVerification: code-LoYt8szcBT
 
 
   # ---------------------------------------------------------------
