@@ -9,4 +9,4 @@ sed -i 's/msvalidate.01/"msvalidate.01"/' ./public/index.html
 sed -i 's/google-site-verification/"google-site-verification"/' ./public/index.html
 # seo url
 cp ./public/sitemap.xml ./public/sitemap-vercel.xml
-sed -i 's/lemon-1997.github.io/lemon-1997-github.io.vercel.app/' ./public/sitemap-vercel.xml
+sed -i 's/lemon-1997.github.io/lemon-1997-github.io.vercel.app/g' ./public/sitemap-vercel.xml
