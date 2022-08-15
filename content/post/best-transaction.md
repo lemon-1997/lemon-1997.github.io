@@ -39,15 +39,73 @@ go开启事务的几个步骤
 
 ## go官方例子
 先欣赏下go官方提供的例子
+```go
+// CreateOrder creates an order for an album and returns the new order ID.
+func CreateOrder(ctx context.Context, albumID, quantity, custID int) (orderID int64, err error) {
 
-{{< gist lemon-1997 17eac44491433666f303b3ff0e252714 "go-dev.go" >}}
+    // Create a helper function for preparing failure results.
+    fail := func(err error) (int64, error) {
+        return fmt.Errorf("CreateOrder: %v", err)
+    }
+
+    // Get a Tx for making transaction requests.
+    tx, err := db.BeginTx(ctx, nil)
+    if err != nil {
+        return fail(err)
+    }
+    // Defer a rollback in case anything fails.
+    defer tx.Rollback()
+
+    // Confirm that album inventory is enough for the order.
+    var enough bool
+    if err = tx.QueryRowContext(ctx, "SELECT (quantity >= ?) from album where id = ?",
+quantity, albumID).Scan(&enough); err != nil {
+		if err == sql.ErrNoRows {
+            return fail(fmt.Errorf("no such album"))
+        }
+        return fail(err)
+    }
+    if !enough {
+        return fail(fmt.Errorf("not enough inventory"))
+    }
+
+    // Update the album inventory to remove the quantity in the order.
+    _, err = tx.ExecContext(ctx, "UPDATE album SET quantity = quantity - ? WHERE id = ?",
+quantity, albumID)
+	if err != nil {
+		return fail(err)
+	}
+
+    // Create a new row in the album_order table.
+    result, err := tx.ExecContext(ctx, 
+		"INSERT INTO album_order (album_id, cust_id, quantity, date) VALUES (?, ?, ?, ?)",
+albumID, custID, quantity, time.Now())
+    if err != nil {
+        return fail(err)
+    }
+    // Get the ID of the order item just created.
+    orderID, err := result.LastInsertId()
+    if err != nil {
+        return fail(err)
+    }
+
+    // Commit the transaction.
+    if err = tx.Commit(); err != nil {
+        return fail(err)
+    }
+
+    // Return the order ID.
+    return orderID, nil
+}
+```
+
 这是go官方提供的例子，大体的代码流程如下
 1. 通过 `DB.Begin` / `DB.BeginTx` 获取 `sql.Tx`
 2. 延迟调用 `Tx.Rollback`
 3. 执行数据库的插入修改语句
 4. 没有出差，通过 `Tx.Commit` 提交
 
-这种方式看起来很不错，失败了能回滚，成功则一起提交，也很清晰的表明事务的整个流程。
+这种方式看起来很不错，失败了能回滚，成功则一起提交，很清晰的表明事务的整个流程。
 但是当你项目的业务逻辑愈加复杂，或者事务里面的某个表新加了字段，需要去调整SQL语句的适合，你必须在这个大函数里面去修改，这看起来很危险。
 像这个例子所体现的，该函数里面做了多个SQL操作，除了单一的业务场景，很难被别的地方复用。
 

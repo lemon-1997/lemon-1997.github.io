@@ -1,6 +1,8 @@
 # add img
 cp ./static/lemon.ico ./themes/hugo-theme-next/static/imgs/icons/
 cp ./static/lemon.jpg ./themes/hugo-theme-next/static/imgs/
+# code font
+sed -i '$ s/$/\n\npre, code {\n\  font-size: 14px;\n}/' ./themes/hugo-theme-next/assets/css/_common/scaffolding/highlight/index.scss
 # gen static
 hugo --minify
 # fix tag quote

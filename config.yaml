@@ -41,7 +41,7 @@ markup:
   highlight:
     codeFences: true
     lineNos: true
-    lineNumbersInTable: true
+    lineNumbersInTable: false
     noClasses: true
     # 高亮代码的样式名称，可选：monokai | emacs | api | dracula | friendly
     # 更多的样式：https://xyproto.github.io/splash/docs/all.html
@@ -49,11 +49,47 @@ markup:
     # More: https://xyproto.github.io/splash/docs/all.html
     style: "monokai"
   tableOfContents:
-    # 开始/结束标题级别：1-6
+    # 开始/结束标题级别：1-60
     # Heading title level of start or end: 1-6
     startLevel: 1
     endLevel: 3
     ordered: false
+
+# 站点文章导航文件
+# Site map of all articles
+sitemap:
+  filename: "sitemap.xml"
+  changefreq: "weekly"
+  priority: 0.5
+
+outputFormats:
+  RSS:
+    baseName: "rss"
+  # 自定义生成本地搜索文件
+  # Custom file of indexes for local search
+  LocalIndexes:
+    mediaType: application/xml
+    baseName: searchindexes
+    isPlainText: true
+    notAlternative: true
+  # 生成 Algolia 索引文件
+  # Build indexes of Aloglia
+  AlgoliaIndexes:
+    mediaType: application/json
+    baseName: algolia
+    isPlainText: true
+    notAlternative: true
+
+# 默认使用本地搜索，如切换到 Algolia 搜索引擎，
+# 请将下面的 LocalIndexes 替换成 AlgoliaIndexes
+# By default use local search, before switch to Algolia engine
+# Please replace LocalIndexes with AlgoliaIndexes
+outputs:
+  home: ["HTML", "RSS", "LocalIndexes"]
+
+# 输出 robots 文件支持爬虫扫描
+# Enable robots with support crawler scan
+enableRobotsTXT: true
 
 #--------------------------------------
 # 菜单配置说明
