@@ -4,7 +4,7 @@ description: "lemon"
 keywords: "lemon"
 
 date: 2022-08-09T22:17:49+08:00
-lastmod: 2022-08-13T15:40:00+08:00
+lastmod: 2022-08-15T21:40:00+08:00
 
 tags:
 - lemon
@@ -18,6 +18,10 @@ tags:
 * 项目实战
 * 框架教程
 * 随想记录
+
+# 博客地址
+* 国内：https://lemon-1997-github-io.vercel.app/
+* 国外：https://lemon-1997.github.io/
 
 # 联系方式
 * Github：https://github.com/lemon-1997
