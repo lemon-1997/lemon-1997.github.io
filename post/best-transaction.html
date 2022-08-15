@@ -29,7 +29,7 @@
 <meta property="article:modified_time" content="2022-08-15 21:40:00 +0800 +0800">
 <link type=text/css rel=stylesheet href=https://unpkg.com/@fortawesome/fontawesome-free@6.1.2/css/all.min.css>
 <link type=text/css rel=stylesheet href=https://unpkg.com/animate.css@3.1.1/animate.min.css>
-<link rel=stylesheet href=/css/main.min.c0e5ca77ca78035276eeb7caad1babc804694a40eeefa8b2aa198c8717af6cd9.css>
+<link rel=stylesheet href=/css/main.min.47d5ab2272a1477069587527d9ae802f49bb7b9ff6cf4f6d6d838f6707337a42.css>
 <style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
 <script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"best-transaction.html","permalink":"https://lemon-1997.github.io/post/best-transaction.html","title":"mysql事务在go语言中的正确打开方式"}</script>
 <script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.id="LA_COLLECT",a.src="https://sdk.51.la/js-sdk-pro.min.js",a.async="true",a.onload=function(){},document.head.appendChild(a)})</script>
@@ -243,14 +243,14 @@
 <span class=post-meta-item-icon>
 <i class="far fa-file-word"></i>
 </span>
-<span class=post-meta-item-text>字数：</span><span>407</span>
+<span class=post-meta-item-text>字数：</span><span>710</span>
 </span>
 <span class=post-meta-item title=阅读>
 <span class=post-meta-item-icon>
 <i class="far fa-clock"></i>
 </span>
 <span class=post-meta-item-text>阅读：&ap;</span>
-<span>1分钟</span>
+<span>2分钟</span>
 </span>
 <span class=post-meta-item title=浏览>
 <span class=post-meta-item-icon>
@@ -289,15 +289,71 @@
 </ol>
 <h2 id=go官方例子>go官方例子</h2>
 <p>先欣赏下go官方提供的例子</p>
-<p><script type=application/javascript src="https://gist.github.com/lemon-1997/17eac44491433666f303b3ff0e252714.js?file=go-dev.go"></script>
-这是go官方提供的例子，大体的代码流程如下</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#75715e>// CreateOrder creates an order for an album and returns the new order ID.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>CreateOrder</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>albumID</span>, <span style=color:#a6e22e>quantity</span>, <span style=color:#a6e22e>custID</span> <span style=color:#66d9ef>int</span>) (<span style=color:#a6e22e>orderID</span> <span style=color:#66d9ef>int64</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>    <span style=color:#75715e>// Create a helper function for preparing failure results.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span><span style=color:#75715e></span>    <span style=color:#a6e22e>fail</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) (<span style=color:#66d9ef>int64</span>, <span style=color:#66d9ef>error</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;CreateOrder: %v&#34;</span>, <span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>    <span style=color:#75715e>// Get a Tx for making transaction requests.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span><span style=color:#75715e></span>    <span style=color:#a6e22e>tx</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>db</span>.<span style=color:#a6e22e>BeginTx</span>(<span style=color:#a6e22e>ctx</span>, <span style=color:#66d9ef>nil</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>    <span style=color:#75715e>// Defer a rollback in case anything fails.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span><span style=color:#75715e></span>    <span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>tx</span>.<span style=color:#a6e22e>Rollback</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span>    <span style=color:#75715e>// Confirm that album inventory is enough for the order.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span><span style=color:#75715e></span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>enough</span> <span style=color:#66d9ef>bool</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19</span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>tx</span>.<span style=color:#a6e22e>QueryRowContext</span>(<span style=color:#a6e22e>ctx</span>, <span style=color:#e6db74>&#34;SELECT (quantity &gt;= ?) from album where id = ?&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20</span><span style=color:#a6e22e>quantity</span>, <span style=color:#a6e22e>albumID</span>).<span style=color:#a6e22e>Scan</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>enough</span>); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21</span>		<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>ErrNoRows</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22</span>            <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;no such album&#34;</span>))
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23</span>        }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26</span>    <span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>enough</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;not enough inventory&#34;</span>))
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30</span>    <span style=color:#75715e>// Update the album inventory to remove the quantity in the order.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31</span><span style=color:#75715e></span>    <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>tx</span>.<span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span>, <span style=color:#e6db74>&#34;UPDATE album SET quantity = quantity - ? WHERE id = ?&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32</span><span style=color:#a6e22e>quantity</span>, <span style=color:#a6e22e>albumID</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33</span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34</span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37</span>    <span style=color:#75715e>// Create a new row in the album_order table.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38</span><span style=color:#75715e></span>    <span style=color:#a6e22e>result</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tx</span>.<span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span>, 
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39</span>		<span style=color:#e6db74>&#34;INSERT INTO album_order (album_id, cust_id, quantity, date) VALUES (?, ?, ?, ?)&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40</span><span style=color:#a6e22e>albumID</span>, <span style=color:#a6e22e>custID</span>, <span style=color:#a6e22e>quantity</span>, <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>())
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41</span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44</span>    <span style=color:#75715e>// Get the ID of the order item just created.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45</span><span style=color:#75715e></span>    <span style=color:#a6e22e>orderID</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>result</span>.<span style=color:#a6e22e>LastInsertId</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46</span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50</span>    <span style=color:#75715e>// Commit the transaction.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51</span><span style=color:#75715e></span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>tx</span>.<span style=color:#a6e22e>Commit</span>(); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52</span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fail</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55</span>    <span style=color:#75715e>// Return the order ID.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56</span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>orderID</span>, <span style=color:#66d9ef>nil</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57</span>}
+</code></pre></div><p>这是go官方提供的例子，大体的代码流程如下</p>
 <ol>
 <li>通过 <code>DB.Begin</code> / <code>DB.BeginTx</code> 获取 <code>sql.Tx</code></li>
 <li>延迟调用 <code>Tx.Rollback</code></li>
 <li>执行数据库的插入修改语句</li>
 <li>没有出差，通过 <code>Tx.Commit</code> 提交</li>
 </ol>
-<p>这种方式看起来很不错，失败了能回滚，成功则一起提交，也很清晰的表明事务的整个流程。
+<p>这种方式看起来很不错，失败了能回滚，成功则一起提交，很清晰的表明事务的整个流程。
 但是当你项目的业务逻辑愈加复杂，或者事务里面的某个表新加了字段，需要去调整SQL语句的适合，你必须在这个大函数里面去修改，这看起来很危险。
 像这个例子所体现的，该函数里面做了多个SQL操作，除了单一的业务场景，很难被别的地方复用。</p>
 <h2 id=错误示范>错误示范</h2>
