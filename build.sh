@@ -4,6 +4,7 @@ cp ./static/lemon.jpg ./themes/hugo-theme-next/static/imgs/
 # code font
 sed -i '$ s/$/\n\npre, code {\n\  font-size: 13.5px;\n}/' ./themes/hugo-theme-next/assets/css/_common/scaffolding/highlight/index.scss
 # local search
+sed -i 's/fetch(this.path)/fetch(new URL(this.path, location.origin).href)/' ./themes/hugo-theme-next/assets/js/third-party/search/local.js
 sed -i 's/element.querySelector('\''url'\'').textContent/element.querySelector('\''url'\'').textContent.replace('\''https\:\/\/lemon-1997.github.io\/'\'', '\'''\'')/' ./themes/hugo-theme-next/assets/js/third-party/search/local.js
 # gen static
 hugo --minify
