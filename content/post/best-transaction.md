@@ -145,6 +145,7 @@ err = WithTransaction(db, func(tx sql.Tx) error {
 		return err
 	}
 	
+	// update product inventory
 	res, err = dao.UpdateInventory(tx,product)
 	if err != nil {
 		return err
@@ -175,23 +176,23 @@ func (d *Dao ) UpdateInventory(ctx context, product entity.Product) error {
 ```go
 // Queries is a common interface that is used by both *sqlx.DB and *sqlx.Tx.
 type Queries interface {
-	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
-	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
-	NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+    QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
+    QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
+    NamedExecContext(ctx context.Context, query string, arg interface{}) (sql.Result, error)
+    ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 ```
 在这里，我们定义了一个叫 `Queries` 的 `interface` 去实现 `sql.Db` 和 `sql.Tx` 。那么再对 `Dao` 重新调整一下，并对外提供一个 `New` 函数，支持传入 `sql.Db` 和 `sql.Tx`
 ```go
 type Dao struct{
-	db Queries
+    db Queries
 }
 
 fun NewOderDao (db Queries) *Dao{
-	return &oderDao{db:db}
+    return &oderDao{db:db}
 }
 ```
-问题来了，我们如何与上面封装好的WithTransaction一起使用呢？
+这样一来，我们通过 `Queries` 使 `Dao` 中的函数可以同时是普通执行或者开启事务执行，且调用相关函数时不需要传入数据库对象。那么问题来了，如何与上面封装好的 `WithTransaction`一起使用呢？
 ## best practices
 基于上面两者的结合，最佳实践在这，先看下代码实现
 # 总结
