@@ -4,7 +4,7 @@ cp ./static/lemon.jpg ./themes/hugo-theme-next/static/imgs/
 # code font
 sed -i '$ s/$/\n\npre, code {\n\  font-size: 13.5px;\n}/' ./themes/hugo-theme-next/assets/css/_common/scaffolding/highlight/index.scss
 # local search
-sed -i 's/data.url = decodeURIComponent(data.url).replace(\/\\\/{2,}\/g, '\''\/'\'');/data.url = decodeURIComponent(data.url).replace(\/\\\/{2,}\/g, '\''\/'\'');\n          data.url = decodeURIComponent(data.url).replace('\''https\:\/\/lemon-1997-github-io\/'\'', '\'''\'')/' ./themes/hugo-theme-next/assets/js/third-party/search/local.js
+sed -i 's/data.url = decodeURIComponent(data.url).replace(\/\\\/{2,}\/g, '\''\/'\'');/data.url = decodeURIComponent(data.url).replace(\/\\\/{2,}\/g, '\''\/'\'');\n          data.url = decodeURIComponent(data.url).replace('\''https\:\/\/lemon-1997.github.io\/'\'', '\'''\'')/' ./themes/hugo-theme-next/assets/js/third-party/search/local.js
 # gen static
 hugo --minify
 # fix tag quote
