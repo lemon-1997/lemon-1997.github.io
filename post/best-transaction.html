@@ -244,14 +244,14 @@
 <span class=post-meta-item-icon>
 <i class="far fa-file-word"></i>
 </span>
-<span class=post-meta-item-text>字数：</span><span>1478</span>
+<span class=post-meta-item-text>字数：</span><span>1536</span>
 </span>
 <span class=post-meta-item title=阅读>
 <span class=post-meta-item-icon>
 <i class="far fa-clock"></i>
 </span>
 <span class=post-meta-item-text>阅读：&ap;</span>
-<span>3分钟</span>
+<span>4分钟</span>
 </span>
 <span class=post-meta-item title=浏览>
 <span class=post-meta-item-icon>
@@ -390,11 +390,12 @@
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>	}
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>	
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>	<span style=color:#a6e22e>res</span>, <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>dao</span>.<span style=color:#a6e22e>UpdateInventory</span>(<span style=color:#a6e22e>tx</span>,<span style=color:#a6e22e>product</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>	}
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>	<span style=color:#75715e>// update product inventory
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span><span style=color:#75715e></span>	<span style=color:#a6e22e>res</span>, <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>dao</span>.<span style=color:#a6e22e>UpdateInventory</span>(<span style=color:#a6e22e>tx</span>,<span style=color:#a6e22e>product</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>})
 </code></pre></div><p>好了，目前看来这个例子已经很完美了，我们不需要写过多的重复代码，事务的操作，数据库执行的SQL都能被很好的复用。
 但是还有个问题，上面的 <code>CreateOrder</code> 和 <code>UpdateInventory</code> 函数需要传入 <code>sql.Tx</code>，这会使调用者难以下手，理论上调用者不应该关心传入哪个数据库，他只想完成创建订单，扣减库存的操作。
 而且，当你的事务只需要执行一次SQL时，并不需要开启事务的，但你的传参确实 <code>sql.Tx</code>，这会导致多余的代码，且很不优雅。</p>
@@ -415,20 +416,20 @@
 那我们有没有办法减少重复代码的开发呢？答案是有的，那就是 <code>interface{}</code></p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1</span><span style=color:#75715e>// Queries is a common interface that is used by both *sqlx.DB and *sqlx.Tx.
 </span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Queries</span> <span style=color:#66d9ef>interface</span> {
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3</span>	<span style=color:#a6e22e>QueryRowxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) <span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Row</span>
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4</span>	<span style=color:#a6e22e>QueryxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Rows</span>, <span style=color:#66d9ef>error</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5</span>	<span style=color:#a6e22e>NamedExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>arg</span> <span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6</span>	<span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3</span>    <span style=color:#a6e22e>QueryRowxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) <span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Row</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4</span>    <span style=color:#a6e22e>QueryxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Rows</span>, <span style=color:#66d9ef>error</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5</span>    <span style=color:#a6e22e>NamedExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>arg</span> <span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6</span>    <span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">7</span>}
 </code></pre></div><p>在这里，我们定义了一个叫 <code>Queries</code> 的 <code>interface</code> 去实现 <code>sql.Db</code> 和 <code>sql.Tx</code> 。那么再对 <code>Dao</code> 重新调整一下，并对外提供一个 <code>New</code> 函数，支持传入 <code>sql.Db</code> 和 <code>sql.Tx</code></p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1</span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dao</span> <span style=color:#66d9ef>struct</span>{
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2</span>	<span style=color:#a6e22e>db</span> <span style=color:#a6e22e>Queries</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2</span>    <span style=color:#a6e22e>db</span> <span style=color:#a6e22e>Queries</span>
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3</span>}
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4</span>
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5</span><span style=color:#a6e22e>fun</span> <span style=color:#a6e22e>NewOderDao</span> (<span style=color:#a6e22e>db</span> <span style=color:#a6e22e>Queries</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Dao</span>{
-<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6</span>	<span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>oderDao</span>{<span style=color:#a6e22e>db</span>:<span style=color:#a6e22e>db</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6</span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>oderDao</span>{<span style=color:#a6e22e>db</span>:<span style=color:#a6e22e>db</span>}
 <span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">7</span>}
-</code></pre></div><p>问题来了，我们如何与上面封装好的WithTransaction一起使用呢？</p>
+</code></pre></div><p>这样一来，我们通过 <code>Queries</code> 使 <code>Dao</code> 中的函数可以同时是普通执行或者开启事务执行，且调用相关函数时不需要传入数据库对象。那么问题来了，如何与上面封装好的 <code>WithTransaction</code>一起使用呢？</p>
 <h2 id=best-practices>best practices</h2>
 <p>基于上面两者的结合，最佳实践在这，先看下代码实现</p>
 <h1 id=总结>总结</h1>
