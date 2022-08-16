@@ -85,7 +85,7 @@ outputFormats:
 # By default use local search, before switch to Algolia engine
 # Please replace LocalIndexes with AlgoliaIndexes
 outputs:
-  home: ["HTML", "RSS", "LocalIndexes"]
+  home: ["HTML", "RSS", "AlgoliaIndexes"]
 
 # 输出 robots 文件支持爬虫扫描
 # Enable robots with support crawler scan
