@@ -4,7 +4,7 @@ description: "go实现mysql事务的方式对比"
 keywords: "go,mysql,事务"
 
 date: 2022-08-14T17:57:24+08:00
-lastmod: 2022-08-16T22:00:00+08:00
+lastmod: 2022-08-17T22:00:00+08:00
 
 categories:
 - 最佳实践
@@ -21,13 +21,22 @@ url: "post/best-transaction.html"
 <!--more-->
 
 # mysql事务
-acid model
-* a
-* c
-* i
-* d
+mysql的事务保证了我们应用程序和业务逻辑的可靠，是我们日常开发重要的一环，我们必须了解其特性，才能更好的使用它。
 
-事务使用场景以及利弊
+## ACID模型
+首先介绍下 `ACID` 模型
+* A：原子性。事务中的操作要么 `commit` 成功，要么全部 `rollback`
+* C：一致性。事务的执行前后数据要一致，主要是保护数据丢失，比如 `innodb` 中的崩溃恢复机制
+* I：隔离性。事务内部的操作与其他事务的隔离，比如隔离级别以及锁机制
+* D：持久性。事务提交后对数据库具有永久性
+
+## 使用场景
+上面的ACID其实已经可以体现出事务的使用场景。举几个例子
+1. 用户下单时，需要在订单表创建一条记录，并扣减商品的库存
+2. 转账时，一方扣款，另一方必须增加对应的金额
+3. 查询到其他事务还没有提交的数据，导致脏读
+
+了解了什么是事务，接下来我们一起看下在go中是怎么开启事务。
 
 # go实现方式
 go开启事务的几个步骤
@@ -36,6 +45,8 @@ go开启事务的几个步骤
 3. 结束事务
    * 提交事务
    * 回滚事务
+
+看起来很简单，就三个步骤而已，下面看下具体的代码实例。
 
 ## go官方例子
 先欣赏下go官方提供的例子
@@ -194,5 +205,36 @@ fun NewOderDao (db Queries) *Dao{
 ```
 这样一来，我们通过 `Queries` 使 `Dao` 中的函数可以同时是普通执行或者开启事务执行，且调用相关函数时不需要传入数据库对象。那么问题来了，如何与上面封装好的 `WithTransaction`一起使用呢？
 ## best practices
-基于上面两者的结合，最佳实践在这，先看下代码实现
-# 总结
+上面的 `WithTransaction` 函数注入了 `sql.Tx`，那么，我们可以将两者结合，改变一下注入对象，将 `Dao` 注入给 `fn`
+```go
+func WithTransaction(db *sql.DB, fn func(dao *Dao) error) (err error) {
+	tx, err := db.Beginx()
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			// a panic occurred, rollback and repanic
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			// something went wrong, rollback
+			tx.Rollback()
+		} else {
+			// all good, commit
+			err = tx.Commit()
+		}
+	}()
+
+	// inject
+	dao := NewOderDao(tx)
+
+	err = fn(dao)
+	return err
+}
+```
+这样一来，调用 `WithTransaction` 就可以拿到数据库操作对象了
+
+# 结语
+关于mysql的事务操作，相信还有更优秀的写法，这篇文章的例子也许不是最好的，但希望能给你带来启发，有兴趣的可以在下方评论与我交流。
