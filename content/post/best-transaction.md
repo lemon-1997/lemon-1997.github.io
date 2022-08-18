@@ -3,7 +3,7 @@ title: "mysql事务在go语言中的正确打开方式"
 description: "go实现mysql事务的方式对比"
 keywords: "go,mysql,事务"
 
-date: 2022-08-14T17:57:24+08:00
+publishDate: 2022-08-18T21:45:00+08:00
 lastmod: 2022-08-17T22:00:00+08:00
 
 categories:
@@ -171,7 +171,7 @@ err = WithTransaction(db, func(tx sql.Tx) error {
 假设我们现在有一个数据库操作对象 `Dao`
 ```go
 type Dao struct{
-	db sql.Db
+	db *sql.Db
 }
 
 func (d *Dao ) CreateOrder(ctx context, order entity.Order) error {
@@ -234,7 +234,43 @@ func WithTransaction(db *sql.DB, fn func(dao *Dao) error) (err error) {
 	return err
 }
 ```
-这样一来，调用 `WithTransaction` 就可以拿到数据库操作对象了
+这样一来，调用 `WithTransaction` 就可以拿到数据库操作对象了。最后别忘了补充单元测试，那是你go项目中可靠性以及可维护性的一部分
+```go
+// init db dao
+func init(){
+	
+}
+
+func Test_WithTransaction(t *testing.T) {
+    tests := []struct{
+        fn func(dao *Dao)error
+        // out? or else
+    }{
+        {
+            func(dao *Dao)error{
+                ctx, cancel := context.WithCancel(context.Background())
+                cancel()
+                err := dao.CreateOrderInfo(ctx, &order)
+                if err != nil {
+                    t.Logf("error %v emit roollback", err)
+                    return err
+                }
+                t.Logf("comit order %v", order)
+                return nil
+            },
+        },
+        {
+            func(dao *Dao)error{
+                return nil
+            },
+        },
+    }
+    for _, tt := range tests{
+        _ = WithTransaction(db, tt.fn)
+    }
+}
+
+```
 
 # 结语
 关于mysql的事务操作，相信还有更优秀的写法，这篇文章的例子也许不是最好的，但希望能给你带来启发，有兴趣的可以在下方评论与我交流。
