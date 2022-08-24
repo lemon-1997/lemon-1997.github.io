@@ -1,0 +1,572 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<meta name=theme-color content="#222" media="(prefers-color-scheme: dark)">
+<meta name=generator content="Hugo 0.91.2">
+<link rel="shortcut icon" type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
+<link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
+<meta itemprop=name content="如何在go中写好单元测试">
+<meta itemprop=description content="如何在go中写好单元测试">
+<meta itemprop=datePublished zgotmplz>
+<meta itemprop=dateModified zgotmplz>
+<meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
+<meta itemprop=keywords content="go,单元测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何在go中写好单元测试">
+<meta property="og:description" content="如何在go中写好单元测试">
+<meta property="og:image" content="/imgs/lemon.jpg">
+<meta property="og:image:width" content="312">
+<meta property="og:image:height" content="312">
+<meta property="og:image:type" content="image/jpeg/png/svg/jpg">
+<meta property="og:url" content="https://lemon-1997.github.io/post/best-test.html">
+<meta property="og:site_name" content="lemon blog">
+<meta property="og:locale" content="zh-CN">
+<meta property="article:author" content="lemon">
+<meta property="article:published_time" content="2022-08-24 20:25:00 +0800 +0800">
+<meta property="article:modified_time" content="2022-08-24 20:20:12 +0800 +0800">
+<link type=text/css rel=stylesheet href=https://unpkg.com/@fortawesome/fontawesome-free@6.1.2/css/all.min.css>
+<link type=text/css rel=stylesheet href=https://unpkg.com/animate.css@3.1.1/animate.min.css>
+<link rel=stylesheet href=/css/main.min.f078dcdb764b29f61a4d8bf24bbe51974131d81ac44a7819fa52b1479736fd77.css>
+<style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"best-test.html","permalink":"https://lemon-1997.github.io/post/best-test.html","title":"如何在go中写好单元测试"}</script>
+<script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.id="LA_COLLECT",a.src="https://sdk.51.la/js-sdk-pro.min.js",a.async="true",a.onload=function(){},document.head.appendChild(a)})</script>
+<title>如何在go中写好单元测试 - lemon blog</title>
+<noscript>
+<link rel=stylesheet href=/css/noscript.css>
+</noscript>
+</head>
+<body itemscope itemtype=http://schema.org/WebPage>
+<div class=headband></div>
+<main class=main>
+<header class=header itemscope itemtype=http://schema.org/WPHeader>
+<div class=header-inner>
+<div class=site-brand-container>
+<div class=site-nav-toggle>
+<div class=toggle aria-label=切换导航栏 role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+</div>
+<div class=site-meta>
+<a href=/ class=brand rel=start>
+<i class=logo-line></i>
+<h1 class=site-title>lemon blog</h1>
+<i class=logo-line></i>
+</a>
+<p class=site-subtitle itemprop=description>Hi there 👋</p>
+</div>
+<div class=site-nav-right>
+<div class="toggle popup-trigger">
+<i class="fa fa-search fa-fw fa-lg"></i>
+</div>
+</div>
+</div>
+<nav class=site-nav>
+<ul class="main-menu menu">
+<li class="menu-item menu-item-home">
+<a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页
+</a>
+</li>
+<li class="menu-item menu-item-about">
+<a href=/about/ class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于
+</a>
+</li>
+<li class="menu-item menu-item-archives">
+<a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>6</span>
+</a>
+</li>
+<li class="menu-item menu-item-search">
+<a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索
+</a>
+</li>
+</ul>
+</nav>
+<div class=search-pop-overlay>
+<div class="popup search-popup">
+<div class=search-header>
+<span class=search-icon>
+<i class="fa fa-search"></i>
+</span>
+<div class=search-input-container>
+<input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input>
+</div>
+<span class=popup-btn-close role=button>
+<i class="fa fa-times-circle"></i>
+</span>
+</div>
+<div class="search-result-container no-result">
+<div class=search-result-icon>
+<i class="fa fa-spinner fa-pulse fa-5x"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="toggle sidebar-toggle" role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+<aside class=sidebar>
+<div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+<ul class=sidebar-nav>
+<li class=sidebar-nav-toc>
+文章目录
+</li>
+<li class=sidebar-nav-overview>
+站点概览
+</li>
+</ul>
+<div class=sidebar-panel-container>
+<div class="post-toc-wrap sidebar-panel">
+<div class="post-toc animated"><nav id=TableOfContents>
+<ul>
+<li><a href=#单元测试>单元测试</a>
+<ul>
+<li><a href=#单元测试基本概念>单元测试基本概念</a></li>
+<li><a href=#单元测试的优点>单元测试的优点</a></li>
+</ul>
+</li>
+<li><a href=#go内置测试框架>go内置测试框架</a>
+<ul>
+<li><a href=#testingt>testing.T</a></li>
+<li><a href=#官方例子>官方例子</a></li>
+</ul>
+</li>
+<li><a href=#最佳实践>最佳实践</a>
+<ul>
+<li><a href=#starting>starting</a></li>
+<li><a href=#table-test>table test</a></li>
+<li><a href=#mock-test>mock test</a></li>
+<li><a href=#dependency-injection>dependency injection</a></li>
+</ul>
+</li>
+<li><a href=#结语>结语</a></li>
+</ul>
+</nav></div>
+</div>
+<div class="site-overview-wrap sidebar-panel">
+<div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person>
+<img class=site-author-image itemprop=image alt=lemon src=/imgs/lemon.jpg>
+<p class=site-author-name itemprop=name>lemon</p>
+<div class=site-description itemprop=description>simple is better</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+<nav class=site-state>
+<div class="site-state-item site-state-posts">
+<a href=/archives/>
+<span class=site-state-item-count>6</span>
+<span class=site-state-item-name>日志</span>
+</a>
+</div>
+<div class="site-state-item site-state-categories">
+<a href=/categories/>
+<span class=site-state-item-count>5</span>
+<span class=site-state-item-name>分类</span>
+</a>
+</div>
+<div class="site-state-item site-state-tags">
+<a href=/tags/>
+<span class=site-state-item-count>8</span>
+<span class=site-state-item-name>标签</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="links-of-social site-overview-item animated">
+<span class=links-of-social-item>
+<a href=https://github.com/lemon-1997 title="Github → https://github.com/lemon-1997" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fab fa-github fa-fw hvr-icon"></i>Github
+</a>
+</span>
+<span class=links-of-social-item>
+<a href=mailto:lemom_1997@126.com title="E-Mail → mailto:lemom_1997@126.com" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fa fa-envelope fa-fw hvr-icon"></i>E-Mail
+</a>
+</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class=sidebar-dimmer></div>
+</header>
+<div class=back-to-top role=button aria-label=返回顶部>
+<i class="fa fa-arrow-up"></i>
+<span>0%</span>
+</div>
+<div class=reading-progress-bar></div>
+<a role=button class="book-mark-link book-mark-link-fixed"></a>
+<noscript>
+<div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<div class="main-inner post posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/best-test.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="如何在go中写好单元测试">
+<meta itemprop=description content="如何在go中写好单元测试">
+</span>
+<header class=post-header>
+<h1 class=post-title itemprop="name headline">如何在go中写好单元测试 </h1> <div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2022-08-24 20:25:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2022-08-24 20:25:00 +0800 +0800">2022-08-24</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5 itemprop=url rel=index>
+<span itemprop=name>最佳实践</span>
+</a>
+</span>
+</span>
+</div>
+<div class=post-meta-items>
+<span class=post-meta-item title=字数>
+<span class=post-meta-item-icon>
+<i class="far fa-file-word"></i>
+</span>
+<span class=post-meta-item-text>字数：</span><span>2262</span>
+</span>
+<span class=post-meta-item title=阅读>
+<span class=post-meta-item-icon>
+<i class="far fa-clock"></i>
+</span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>5分钟</span>
+</span>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/best-test.html><i class="fa fa-sync fa-spin"></i></span>
+</span>
+</div>
+</div>
+</header>
+<div class=post-body itemprop=articleBody>
+<p>当你还在用postman测试你的api时，那表明你还没找到使用go的最佳姿势，阅读这篇文章，一起来了解下go内置的测试框架，这会对你有所帮助。</p>
+<h1 id=单元测试>单元测试</h1>
+<p>单元测试是我们项目开发中不可缺少的一部分，如果一个go项目没有单元测试，且刚好项目交接到你手里，由你来维护，那会很棘手，没有测试，意味着无法掌控这个项目，它就像一个定时炸弹，随时会产生bug。作为程序员，我们必须好好了解下单元测试。</p>
+<h2 id=单元测试基本概念>单元测试基本概念</h2>
+<ul>
+<li>单元测试：应用中最小可测试部分，能够单独运行，用于被检测代码是否按照预期工作</li>
+<li>测试用例：是一组测试，包括输入，执行条件，以及预期结果等</li>
+<li>覆盖率：测试的度量，用来衡量代码被测试的比例</li>
+<li>测试驱动开发：先有测试，后再通过修改代码使测试通过的开发方式</li>
+</ul>
+<h2 id=单元测试的优点>单元测试的优点</h2>
+<ol>
+<li>易于调试</li>
+<li>提前发现问题</li>
+<li>短代码，简洁且高质量</li>
+</ol>
+<p>可能有人会觉得写单元测试是一件很麻烦的事，认为浪费时间。但也许你写了单元测试，他能减少你项目出问题排错的时间，也能让你更好的运行指定的代码，更精准的找到问题。写单元测试其实为你带来了效率上的提升，并且在go中，为项目增加单元测试非常简单。</p>
+<h1 id=go内置测试框架>go内置测试框架</h1>
+<p>go官方包自带了测试框架，这不仅仅是go官方为了所有gopher能更方便的写测试，也直接证明了测试的重要性，官方直接把他丢进了std里，可见一斑。
+在最新版本的go中，go团队加入了模糊测试，不过本篇文章只涉及单元测试，不会讲解基准测试以及模糊测试。</p>
+<h2 id=testingt>testing.T</h2>
+<p>在go中写单元测试，我们先写了解下 <code>testing.T</code> 这个类型以及其持有的方法</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#75715e>// TB is the interface common to T and B.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>TB</span> <span style=color:#66d9ef>interface</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>    <span style=color:#a6e22e>Cleanup</span>(<span style=color:#66d9ef>func</span>())
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>    <span style=color:#a6e22e>Error</span>(<span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>    <span style=color:#a6e22e>Errorf</span>(<span style=color:#a6e22e>format</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>    <span style=color:#a6e22e>Fail</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>    <span style=color:#a6e22e>FailNow</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>    <span style=color:#a6e22e>Failed</span>() <span style=color:#66d9ef>bool</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>    <span style=color:#a6e22e>Fatal</span>(<span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>    <span style=color:#a6e22e>Fatalf</span>(<span style=color:#a6e22e>format</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>    <span style=color:#a6e22e>Helper</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>    <span style=color:#a6e22e>Log</span>(<span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>    <span style=color:#a6e22e>Logf</span>(<span style=color:#a6e22e>format</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>    <span style=color:#a6e22e>Name</span>() <span style=color:#66d9ef>string</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>    <span style=color:#a6e22e>Skip</span>(<span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>    <span style=color:#a6e22e>SkipNow</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span>    <span style=color:#a6e22e>Skipf</span>(<span style=color:#a6e22e>format</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span>    <span style=color:#a6e22e>Skipped</span>() <span style=color:#66d9ef>bool</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19</span>    <span style=color:#a6e22e>TempDir</span>() <span style=color:#66d9ef>string</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20</span>    
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21</span>    <span style=color:#75715e>// A private method to prevent users implementing the
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22</span><span style=color:#75715e></span>    <span style=color:#75715e>// interface and so future additions to it will not
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23</span><span style=color:#75715e></span>    <span style=color:#75715e>// violate Go 1 compatibility.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24</span><span style=color:#75715e></span>    <span style=color:#a6e22e>private</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27</span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>T</span> <span style=color:#66d9ef>struct</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28</span>    <span style=color:#a6e22e>common</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29</span>    <span style=color:#a6e22e>isParallel</span> <span style=color:#66d9ef>bool</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30</span>    <span style=color:#a6e22e>context</span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>testContext</span> <span style=color:#75715e>// For running tests and subtests.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31</span><span style=color:#75715e></span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33</span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> <span style=color:#a6e22e>TB</span> = (<span style=color:#f92672>*</span><span style=color:#a6e22e>T</span>)(<span style=color:#66d9ef>nil</span>)
+</code></pre></div><p>这里顺便给大家科普下，<code>var _ TB = (*T)(nil)</code> 这行语句，使用了编译时断言，如果 <code>T</code> 没有实现 <code>TB</code> 里定义的方法，那么编译就会报错，这样能让开发者及时发现问题，避免错误的发生。大家平常写代码也可以使用编译时断言来让自己的项目更加健壮。</p>
+<p>常用方法</p>
+<ul>
+<li>Logf：记录日志，提供代码测试时运行信息</li>
+<li>Errorf：记录日志，但会让测试不能通过</li>
+<li>Fatalf：记录日志，测试立即停止且测试失败</li>
+<li>Skipf：记录日志，并跳过该测试函数</li>
+<li>Cleanup：清理函数，资源的释放</li>
+<li>Helper：辅助函数，打印文件行信息</li>
+</ul>
+<h2 id=官方例子>官方例子</h2>
+<p><code>testing.T</code> 看起来比较简单，老规矩，先上官方例子</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#f92672>package</span> <span style=color:#a6e22e>greetings</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span><span style=color:#f92672>import</span> (
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>    <span style=color:#e6db74>&#34;testing&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>    <span style=color:#e6db74>&#34;regexp&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span><span style=color:#75715e>// TestHelloName calls greetings.Hello with a name, checking
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span><span style=color:#75715e>// for a valid return value.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestHelloName</span>(<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>T</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>    <span style=color:#a6e22e>name</span> <span style=color:#f92672>:=</span> <span style=color:#e6db74>&#34;Gladys&#34;</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>    <span style=color:#a6e22e>want</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>regexp</span>.<span style=color:#a6e22e>MustCompile</span>(<span style=color:#e6db74>`\b`</span><span style=color:#f92672>+</span><span style=color:#a6e22e>name</span><span style=color:#f92672>+</span><span style=color:#e6db74>`\b`</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>    <span style=color:#a6e22e>msg</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Hello</span>(<span style=color:#e6db74>&#34;Gladys&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>    <span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>want</span>.<span style=color:#a6e22e>MatchString</span>(<span style=color:#a6e22e>msg</span>) <span style=color:#f92672>||</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>        <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatalf</span>(<span style=color:#e6db74>`Hello(&#34;Gladys&#34;) = %q, %v, want match for %#q, nil`</span>, <span style=color:#a6e22e>msg</span>, <span style=color:#a6e22e>err</span>, <span style=color:#a6e22e>want</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19</span><span style=color:#75715e>// TestHelloEmpty calls greetings.Hello with an empty string,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20</span><span style=color:#75715e>// checking for an error.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestHelloEmpty</span>(<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>T</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22</span>    <span style=color:#a6e22e>msg</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Hello</span>(<span style=color:#e6db74>&#34;&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23</span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>msg</span> <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#34;&#34;</span> <span style=color:#f92672>||</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24</span>        <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatalf</span>(<span style=color:#e6db74>`Hello(&#34;&#34;) = %q, %v, want &#34;&#34;, error`</span>, <span style=color:#a6e22e>msg</span>, <span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25</span>    }
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26</span>}
+</code></pre></div><p>上面的例子大家应该都看得懂，我就不总结具体的测试流程了，这里主要是为了给大家展示在go中写单元测试是多么方便。</p>
+<h1 id=最佳实践>最佳实践</h1>
+<h2 id=starting>starting</h2>
+<p>在开始之前，我们要先了解go的测试规范</p>
+<ul>
+<li>文件名：前缀为测试代码的文件名，以 <code>_test.go</code> 结尾（go build 会忽略这些文件）</li>
+<li>文件位置：位于测试的代码同一 <code>package</code> 下</li>
+<li>函数名：<code>Test</code> 为前缀，后面是测试函数名，函数参数为 <code>*testing.T</code></li>
+</ul>
+<h2 id=table-test>table test</h2>
+<p><code>table test</code> 是一种很棒的写法，它能让你的测试代码足够清晰，让你的测试用例易于维护，该写法可以在各种库中见到。其大体流程为：</p>
+<ol>
+<li>定义<code>tests</code> 为测试用例，其结构为匿名结构体切片 <code>[]struct{}</code></li>
+<li>补充匿名结构体变量，定义好输入输出，丰富测试用例</li>
+<li>遍历测试用例，调用测试方法，判断测试结果是否符合预期</li>
+<li>使用 <code>testing.T</code> 里的方法记录日志或让测试失败</li>
+</ol>
+<p>go源码 encoding/json/encode_test.go 里就采用了这种测试方式</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestRoundtripStringTag</span>(<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>T</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>	<span style=color:#a6e22e>tests</span> <span style=color:#f92672>:=</span> []<span style=color:#66d9ef>struct</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>		<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>		<span style=color:#a6e22e>in</span>   <span style=color:#a6e22e>StringTag</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>		<span style=color:#a6e22e>want</span> <span style=color:#66d9ef>string</span> <span style=color:#75715e>// empty to just test that we roundtrip
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span><span style=color:#75715e></span>	}{
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>		{
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>			<span style=color:#a6e22e>name</span>: <span style=color:#e6db74>&#34;AllTypes&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>			<span style=color:#a6e22e>in</span>: <span style=color:#a6e22e>StringTag</span>{
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>				<span style=color:#a6e22e>BoolStr</span>:    <span style=color:#66d9ef>true</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>				<span style=color:#a6e22e>IntStr</span>:     <span style=color:#ae81ff>42</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>				<span style=color:#a6e22e>UintptrStr</span>: <span style=color:#ae81ff>44</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>				<span style=color:#a6e22e>StrStr</span>:     <span style=color:#e6db74>&#34;xzbit&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>				<span style=color:#a6e22e>NumberStr</span>:  <span style=color:#e6db74>&#34;46&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>			},
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>			<span style=color:#a6e22e>want</span>: <span style=color:#e6db74>`{
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span><span style=color:#e6db74>				&#34;BoolStr&#34;: &#34;true&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span><span style=color:#e6db74>				&#34;IntStr&#34;: &#34;42&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19</span><span style=color:#e6db74>				&#34;UintptrStr&#34;: &#34;44&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20</span><span style=color:#e6db74>				&#34;StrStr&#34;: &#34;\&#34;xzbit\&#34;&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21</span><span style=color:#e6db74>				&#34;NumberStr&#34;: &#34;46&#34;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22</span><span style=color:#e6db74>			}`</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23</span>		},
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24</span>		{
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25</span>			<span style=color:#75715e>// See golang.org/issues/38173.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26</span><span style=color:#75715e></span>			<span style=color:#a6e22e>name</span>: <span style=color:#e6db74>&#34;StringDoubleEscapes&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27</span>			<span style=color:#a6e22e>in</span>: <span style=color:#a6e22e>StringTag</span>{
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28</span>				<span style=color:#a6e22e>StrStr</span>:    <span style=color:#e6db74>&#34;\b\f\n\r\t\&#34;\\&#34;</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29</span>				<span style=color:#a6e22e>NumberStr</span>: <span style=color:#e6db74>&#34;0&#34;</span>, <span style=color:#75715e>// just to satisfy the roundtrip
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30</span><span style=color:#75715e></span>			},
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31</span>			<span style=color:#a6e22e>want</span>: <span style=color:#e6db74>`{
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32</span><span style=color:#e6db74>				&#34;BoolStr&#34;: &#34;false&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33</span><span style=color:#e6db74>				&#34;IntStr&#34;: &#34;0&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34</span><span style=color:#e6db74>				&#34;UintptrStr&#34;: &#34;0&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35</span><span style=color:#e6db74>				&#34;StrStr&#34;: &#34;\&#34;\\u0008\\u000c\\n\\r\\t\\\&#34;\\\\\&#34;&#34;,
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36</span><span style=color:#e6db74>				&#34;NumberStr&#34;: &#34;0&#34;
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37</span><span style=color:#e6db74>			}`</span>,
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38</span>		},
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40</span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>test</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>tests</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41</span>		<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Run</span>(<span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>name</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>T</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42</span>			<span style=color:#75715e>// Indent with a tab prefix to make the multi-line string
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43</span><span style=color:#75715e></span>			<span style=color:#75715e>// literals in the table nicer to read.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44</span><span style=color:#75715e></span>			<span style=color:#a6e22e>got</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>MarshalIndent</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>in</span>, <span style=color:#e6db74>&#34;\t\t\t&#34;</span>, <span style=color:#e6db74>&#34;\t&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45</span>			<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46</span>				<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatal</span>(<span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47</span>			}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48</span>			<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>got</span> <span style=color:#f92672>:=</span> string(<span style=color:#a6e22e>got</span>); <span style=color:#a6e22e>got</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>want</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49</span>				<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatalf</span>(<span style=color:#e6db74>&#34; got: %s\nwant: %s\n&#34;</span>, <span style=color:#a6e22e>got</span>, <span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>want</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50</span>			}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52</span>			<span style=color:#75715e>// Verify that it round-trips.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53</span><span style=color:#75715e></span>			<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>s2</span> <span style=color:#a6e22e>StringTag</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54</span>			<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Unmarshal</span>(<span style=color:#a6e22e>got</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>s2</span>); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55</span>				<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatalf</span>(<span style=color:#e6db74>&#34;Decode: %v&#34;</span>, <span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56</span>			}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57</span>			<span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>reflect</span>.<span style=color:#a6e22e>DeepEqual</span>(<span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>in</span>, <span style=color:#a6e22e>s2</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">58</span>				<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Fatalf</span>(<span style=color:#e6db74>&#34;decode didn&#39;t match.\nsource: %#v\nEncoded as:\n%s\ndecode: %#v&#34;</span>, <span style=color:#a6e22e>test</span>.<span style=color:#a6e22e>in</span>, string(<span style=color:#a6e22e>got</span>), <span style=color:#a6e22e>s2</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">59</span>			}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">60</span>		})
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">61</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">62</span>}
+</code></pre></div><h2 id=mock-test>mock test</h2>
+<p>当我们由于某些原因，不好直接调用我们的函数去做测试时，我们应该如何做呢？答案就是 <code>interface</code> ，如果我们的测试函数输入刚好是 <code>interface</code> 时，那很棒，如果不是呢，考虑下将函数参数抽象为 <code>interfae</code> ，是否你的代码会更好。<br>
+直接看下面的例子，这也是来自go源码 io/io_test.go</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>zeroErrReader</span> <span style=color:#66d9ef>struct</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>	<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>zeroErrReader</span>) <span style=color:#a6e22e>Read</span>(<span style=color:#a6e22e>p</span> []<span style=color:#66d9ef>byte</span>) (<span style=color:#66d9ef>int</span>, <span style=color:#66d9ef>error</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>	<span style=color:#66d9ef>return</span> copy(<span style=color:#a6e22e>p</span>, []<span style=color:#66d9ef>byte</span>{<span style=color:#ae81ff>0</span>}), <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>err</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>errWriter</span> <span style=color:#66d9ef>struct</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>	<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>w</span> <span style=color:#a6e22e>errWriter</span>) <span style=color:#a6e22e>Write</span>([]<span style=color:#66d9ef>byte</span>) (<span style=color:#66d9ef>int</span>, <span style=color:#66d9ef>error</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>w</span>.<span style=color:#a6e22e>err</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17</span><span style=color:#75715e>// In case a Read results in an error with non-zero bytes read, and
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18</span><span style=color:#75715e>// the subsequent Write also results in an error, the error from Write
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19</span><span style=color:#75715e>// is returned, as it is the one that prevented progressing further.
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestCopyReadErrWriteErr</span>(<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>T</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21</span>	<span style=color:#a6e22e>er</span>, <span style=color:#a6e22e>ew</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>errors</span>.<span style=color:#a6e22e>New</span>(<span style=color:#e6db74>&#34;readError&#34;</span>), <span style=color:#a6e22e>errors</span>.<span style=color:#a6e22e>New</span>(<span style=color:#e6db74>&#34;writeError&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22</span>	<span style=color:#a6e22e>r</span>, <span style=color:#a6e22e>w</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>zeroErrReader</span>{<span style=color:#a6e22e>err</span>: <span style=color:#a6e22e>er</span>}, <span style=color:#a6e22e>errWriter</span>{<span style=color:#a6e22e>err</span>: <span style=color:#a6e22e>ew</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23</span>	<span style=color:#a6e22e>n</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Copy</span>(<span style=color:#a6e22e>w</span>, <span style=color:#a6e22e>r</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24</span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>n</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>||</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>ew</span> {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25</span>		<span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;Copy(zeroErrReader, errWriter) = %d, %v; want 0, writeError&#34;</span>, <span style=color:#a6e22e>n</span>, <span style=color:#a6e22e>err</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27</span>}
+</code></pre></div><p>这里通过 <code>zeroErrReader</code> 和 <code>errWriter</code> mock数据，分别实现了 <code>io.Reader</code> 以及 <code>io.Writer</code> ，当我们写测试时，具体怎样mock取决于你想测试的东西。</p>
+<h2 id=dependency-injection>dependency injection</h2>
+<p>有些时候，我们的测试需要外部依赖，例如我们需要数据库实例或者http server，这时候我们可以利用 <code>TestMain</code> 的特性<br>
+来看看go源码 net/http/main_test.go</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestMain</span>(<span style=color:#a6e22e>m</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>M</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>	<span style=color:#a6e22e>setupTestData</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>	<span style=color:#a6e22e>installTestHooks</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span>	<span style=color:#a6e22e>st</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>m</span>.<span style=color:#a6e22e>Run</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>	<span style=color:#a6e22e>testHookUninstaller</span>.<span style=color:#a6e22e>Do</span>(<span style=color:#a6e22e>uninstallTestHooks</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>Verbose</span>() {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span>		<span style=color:#a6e22e>printRunningGoroutines</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>		<span style=color:#a6e22e>printInflightSockets</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>		<span style=color:#a6e22e>printSocketStats</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>	}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>	<span style=color:#a6e22e>forceCloseSockets</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>	<span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Exit</span>(<span style=color:#a6e22e>st</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15</span>}
+</code></pre></div><p>执行测试的时候，会优先执行 <code>TestMain</code> ，然后再通过 <code>m.Run()</code> 执行其他的测试，最好释放我们的资源，这样就解决了我们的资源依赖问题。这里给出一个模板参考，具体的 <code>setup()</code> 和 <code>teardown()</code> 的实现由自己的项目代码所决定。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>setup</span>() {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Setup&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>teardown</span>() {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Teardown&#34;</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span>}
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span>
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>TestMain</span>(<span style=color:#a6e22e>m</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>testing</span>.<span style=color:#a6e22e>M</span>) {
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span>    <span style=color:#a6e22e>setup</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span>    <span style=color:#a6e22e>code</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>m</span>.<span style=color:#a6e22e>Run</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12</span>    <span style=color:#a6e22e>teardown</span>()
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13</span>    <span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Exit</span>(<span style=color:#a6e22e>code</span>)
+<span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14</span>}
+</code></pre></div><h1 id=结语>结语</h1>
+<p>这篇文章所讲的东西都是自己最近写单元测试的一些感悟，如果有错误可在下方评论指出，如果对你有帮助，我也很希望在评论区看到你的评论。
+好了，到这里就结束了，感谢阅读！</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/go>
+go
+</a>
+<a href=/tags/%e5%8d%95%e5%85%83%e6%b5%8b%e8%af%95>
+单元测试
+</a>
+</div>
+<div class=addthis_inline_share_toolbox style=text-align:center></div>
+<hr>
+<div class=post-nav>
+<div class="post-nav-next post-nav-item">
+</div>
+<div class="post-nav-prev post-nav-item">
+<a href=/post/best-transaction.html rel=prev title=mysql事务在go语言中的正确打开方式>
+mysql事务在go语言中的正确打开方式
+<i class="fa fa-chevron-right"></i>
+</a>
+</div>
+</div>
+</footer>
+</article>
+</div>
+<div class=post-comments>
+<div class=comment-head>
+<div class=comment-headline>
+<i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span>
+</div>
+</div>
+<div class=comment-wrap>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=waline-container></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class=footer>
+<div class=footer-inner>
+<div class=copyright>
+&copy;
+<span itemprop=copyrightYear>
+2022
+</span>
+<span class=with-love>
+<i class="fa fa-lemon"></i>
+</span>
+<span class=author itemprop=copyrightHolder>lemon</span>
+</div>
+</div>
+</footer>
+<script type=text/javascript src=https://unpkg.com/animejs@3.2.1/lib/anime.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":true,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":false,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"unpkg","router":"https://unpkg.com"},"version":"4.1.0","waline":{"cfg":{"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.6.1"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.6.1"}}}</script>
+<script type=text/javascript src=/js/main.min.be0a339fd66a45a9fb736ff88ca4c76c38cd605f934e7dd43d482ccf39ed415d.js defer></script>
+</body>
+</html>
