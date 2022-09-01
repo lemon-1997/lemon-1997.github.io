@@ -20,11 +20,11 @@ tags:
 * 随想记录
 
 # 博客地址
-* 国内：https://lemon-1997-github-io.vercel.app/
-* 国外：https://lemon-1997.github.io/
+* 国内：<https://lemon-1997.pages.dev/>
+* 国外：<https://lemon-1997.github.io/>
 
 # 联系方式
-* Github：https://github.com/lemon-1997
+* Github：<https://github.com/lemon-1997>
 * 邮箱：lemom_1997@126.com
 * 评论：参与下方评论与我交流
 
