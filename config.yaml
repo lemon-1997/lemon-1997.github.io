@@ -40,7 +40,7 @@ markup:
       unsafe: true
   highlight:
     codeFences: true
-    lineNos: true
+    lineNos: false
     lineNumbersInTable: false
     noClasses: true
     # 高亮代码的样式名称，可选：monokai | emacs | api | dracula | friendly
