@@ -242,7 +242,7 @@
 <span class=post-meta-item-icon>
 <i class="far fa-file-word"></i>
 </span>
-<span class=post-meta-item-text>字数：</span><span>2242</span>
+<span class=post-meta-item-text>字数：</span><span>2064</span>
 </span>
 <span class=post-meta-item title=阅读>
 <span class=post-meta-item-icon>
@@ -298,68 +298,7 @@
 <p>看起来很简单，就三个步骤而已，下面看下具体的代码实例。</p>
 <h2 id=go官方例子>go官方例子</h2>
 <p>先欣赏下go官方提供的例子</p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// CreateOrder creates an order for an album and returns the new order ID.
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// CreateOrder creates an order for an album and returns the new order ID.
 </span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>CreateOrder</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>albumID</span>, <span style=color:#a6e22e>quantity</span>, <span style=color:#a6e22e>custID</span> <span style=color:#66d9ef>int</span>) (<span style=color:#a6e22e>orderID</span> <span style=color:#66d9ef>int64</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
 
     <span style=color:#75715e>// Create a helper function for preparing failure results.
@@ -416,9 +355,7 @@
     <span style=color:#75715e>// Return the order ID.
 </span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>orderID</span>, <span style=color:#66d9ef>nil</span>
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>这是go官方提供的例子，大体的代码流程如下</p>
+</code></pre></div><p>这是go官方提供的例子，大体的代码流程如下</p>
 <ol>
 <li>通过 <code>DB.Begin</code> / <code>DB.BeginTx</code> 获取 <code>sql.Tx</code></li>
 <li>延迟调用 <code>Tx.Rollback</code></li>
@@ -430,34 +367,7 @@
 像这个例子所体现的，该函数里面做了多个SQL操作，除了单一的业务场景，很难被别的地方复用。</p>
 <h2 id=mysql事务封装>mysql事务封装</h2>
 <p>于是，针对上面的问题，可以先将事务的操作封装起来，并抽离出数据库执行SQL的函数 <code>fn</code></p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>DB</span>, <span style=color:#a6e22e>fn</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Tx</span>) <span style=color:#66d9ef>error</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>DB</span>, <span style=color:#a6e22e>fn</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Tx</span>) <span style=color:#66d9ef>error</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
 	<span style=color:#a6e22e>tx</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>db</span>.<span style=color:#a6e22e>Begin</span>()
 	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
 		<span style=color:#66d9ef>return</span>
@@ -480,27 +390,8 @@
 	<span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>fn</span>(<span style=color:#a6e22e>tx</span>)
 	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>因此使用起来只需要编写相应的数据库操作函数 <code>fn</code>，我们可以对订单，商品数据的操作做更细粒度的封装，就像下面这样</p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>tx</span> <span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Tx</span>) <span style=color:#66d9ef>error</span> {
+</code></pre></div><p>因此使用起来只需要编写相应的数据库操作函数 <code>fn</code>，我们可以对订单，商品数据的操作做更细粒度的封装，就像下面这样</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>tx</span> <span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Tx</span>) <span style=color:#66d9ef>error</span> {
 	<span style=color:#75715e>// insert a record into order table
 </span><span style=color:#75715e></span>	<span style=color:#a6e22e>res</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>dao</span>.<span style=color:#a6e22e>CreateOrder</span>(<span style=color:#a6e22e>tx</span>,<span style=color:#a6e22e>order</span>)
 	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
@@ -513,29 +404,12 @@
 		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
 	}
 })
-</code></pre></td></tr></table>
-</div>
-</div><p>好了，目前看来这个例子已经很完美了，我们不需要写过多的重复代码，事务的操作，数据库执行的SQL都能被很好的复用。
+</code></pre></div><p>好了，目前看来这个例子已经很完美了，我们不需要写过多的重复代码，事务的操作，数据库执行的SQL都能被很好的复用。
 但是还有个问题，上面的 <code>CreateOrder</code> 和 <code>UpdateInventory</code> 函数需要传入 <code>sql.Tx</code>，这会使调用者难以下手，理论上调用者不应该关心传入哪个数据库，他只想完成创建订单，扣减库存的操作。
 而且，当你的事务只需要执行一次SQL时，并不需要开启事务的，但你的传参确实 <code>sql.Tx</code>，这会导致多余的代码，且很不优雅。</p>
 <h2 id=interface登场>interface登场</h2>
 <p>假设我们现在有一个数据库操作对象 <code>Dao</code></p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dao</span> <span style=color:#66d9ef>struct</span>{
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dao</span> <span style=color:#66d9ef>struct</span>{
 	<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Db</span>
 }
 
@@ -546,85 +420,27 @@
 <span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Dao</span> ) <span style=color:#a6e22e>UpdateInventory</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>, <span style=color:#a6e22e>product</span> <span style=color:#a6e22e>entity</span>.<span style=color:#a6e22e>Product</span>) <span style=color:#66d9ef>error</span> {
     <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>db</span>.<span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span>, <span style=color:#e6db74>`Insert into`</span>, <span style=color:#a6e22e>product</span>)
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>如果我们现在需要开启一个事务，这个事务里需要执行 <code>CreateOrder</code> 和 <code>UpdateInventory</code>，这个时候，很多人的第一个想法是重新写一个函数，因为现有的函数都是由 <code>sql.Db</code> 去执行，而不是 <code>sql.Tx</code>。
+</code></pre></div><p>如果我们现在需要开启一个事务，这个事务里需要执行 <code>CreateOrder</code> 和 <code>UpdateInventory</code>，这个时候，很多人的第一个想法是重新写一个函数，因为现有的函数都是由 <code>sql.Db</code> 去执行，而不是 <code>sql.Tx</code>。
 那我们有没有办法减少重复代码的开发呢？答案是有的，那就是 <code>interface{}</code></p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// Queries is a common interface that is used by both *sqlx.DB and *sqlx.Tx.
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// Queries is a common interface that is used by both *sqlx.DB and *sqlx.Tx.
 </span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Queries</span> <span style=color:#66d9ef>interface</span> {
     <span style=color:#a6e22e>QueryRowxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) <span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Row</span>
     <span style=color:#a6e22e>QueryxContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#f92672>*</span><span style=color:#a6e22e>sqlx</span>.<span style=color:#a6e22e>Rows</span>, <span style=color:#66d9ef>error</span>)
     <span style=color:#a6e22e>NamedExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>arg</span> <span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
     <span style=color:#a6e22e>ExecContext</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>query</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>args</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>interface</span>{}) (<span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>Result</span>, <span style=color:#66d9ef>error</span>)
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>在这里，我们定义了一个叫 <code>Queries</code> 的 <code>interface</code> 去实现 <code>sql.Db</code> 和 <code>sql.Tx</code> 。那么再对 <code>Dao</code> 重新调整一下，并对外提供一个 <code>New</code> 函数，支持传入 <code>sql.Db</code> 和 <code>sql.Tx</code></p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dao</span> <span style=color:#66d9ef>struct</span>{
+</code></pre></div><p>在这里，我们定义了一个叫 <code>Queries</code> 的 <code>interface</code> 去实现 <code>sql.Db</code> 和 <code>sql.Tx</code> 。那么再对 <code>Dao</code> 重新调整一下，并对外提供一个 <code>New</code> 函数，支持传入 <code>sql.Db</code> 和 <code>sql.Tx</code></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dao</span> <span style=color:#66d9ef>struct</span>{
     <span style=color:#a6e22e>db</span> <span style=color:#a6e22e>Queries</span>
 }
 
 <span style=color:#a6e22e>fun</span> <span style=color:#a6e22e>NewOderDao</span> (<span style=color:#a6e22e>db</span> <span style=color:#a6e22e>Queries</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Dao</span>{
     <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>oderDao</span>{<span style=color:#a6e22e>db</span>:<span style=color:#a6e22e>db</span>}
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>这样一来，我们通过 <code>Queries</code> 使 <code>Dao</code> 中的函数可以同时是普通执行或者开启事务执行，且调用相关函数时不需要传入数据库对象。那么问题来了，如何与上面封装好的 <code>WithTransaction</code>一起使用呢？</p>
+</code></pre></div><p>这样一来，我们通过 <code>Queries</code> 使 <code>Dao</code> 中的函数可以同时是普通执行或者开启事务执行，且调用相关函数时不需要传入数据库对象。那么问题来了，如何与上面封装好的 <code>WithTransaction</code>一起使用呢？</p>
 <h2 id=best-practices>best practices</h2>
 <p>上面的 <code>WithTransaction</code> 函数注入了 <code>sql.Tx</code>，那么，我们可以将两者结合，改变一下注入对象，将 <code>Dao</code> 注入给 <code>fn</code></p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>DB</span>, <span style=color:#a6e22e>fn</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>dao</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Dao</span>) <span style=color:#66d9ef>error</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>WithTransaction</span>(<span style=color:#a6e22e>db</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>sql</span>.<span style=color:#a6e22e>DB</span>, <span style=color:#a6e22e>fn</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>dao</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Dao</span>) <span style=color:#66d9ef>error</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>) {
 	<span style=color:#a6e22e>tx</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>db</span>.<span style=color:#a6e22e>Beginx</span>()
 	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
 		<span style=color:#66d9ef>return</span>
@@ -650,48 +466,8 @@
 	<span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>fn</span>(<span style=color:#a6e22e>dao</span>)
 	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
 }
-</code></pre></td></tr></table>
-</div>
-</div><p>这样一来，调用 <code>WithTransaction</code> 就可以拿到数据库操作对象了。最后别忘了补充单元测试，那是你go项目中可靠性以及可维护性的一部分</p>
-<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4>
-<table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span></code></pre></td>
-<td style=vertical-align:top;padding:0;margin:0;border:0;width:100%>
-<pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// init db dao
+</code></pre></div><p>这样一来，调用 <code>WithTransaction</code> 就可以拿到数据库操作对象了。最后别忘了补充单元测试，那是你go项目中可靠性以及可维护性的一部分</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// init db dao
 </span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>init</span>(){
 	
 }
@@ -725,9 +501,7 @@
     }
 }
 
-</code></pre></td></tr></table>
-</div>
-</div><h1 id=结语>结语</h1>
+</code></pre></div><h1 id=结语>结语</h1>
 <p>关于mysql的事务操作，相信还有更优秀的写法，这篇文章的例子也许不是最好的，但希望能给你带来启发，有兴趣的可以在下方评论与我交流。</p>
 </div>
 <footer class=post-footer>
