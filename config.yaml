@@ -680,7 +680,7 @@ params:
   # 百度站点验证
   # Baidu Webmaster tools verification.
   # See: https://ziyuan.baidu.com/site
-  baiduSiteVerification: code-LoYt8szcBT
+  baiduSiteVerification: code-DEaMKCdezY
 
 
   # ---------------------------------------------------------------
@@ -762,7 +762,7 @@ params:
     # 可选值：livere | waline | utterances | artalk | giscus
     # Choose a comment system to be displayed by default.
     # Available values: livere | waline | utterances | artalk | giscus
-    active: waline
+    active: utterances
     # 让用户自己选择使用评论插件留言
     # 如果设置为 false，将采用 active 参数的那个插件
     # Setting `true` means remembering the comment system selected by
@@ -775,8 +775,8 @@ params:
     # `name` 参数名可选值：livere | waline | utterances | artalk | giscus
     # Modify texts or order for any naves, here are some examples.
     nav:
-      - name: waline
-        title: Waline
+      - name: utterances
+        title: Utterances
         color: "#27ae60"
         weight: 2
       - name: giscus
@@ -788,14 +788,14 @@ params:
   # 更多配置信息请参考：https://waline.js.org/
   # Waline comments system
   # More info seee: https://waline.js.org/
-  waline:
-    pageView: true
-    placeholder: "请文明发言"
-    emoji: false
-    imgUploader: false
-    wordLimit: 200
-    requiredMeta: ['nick', 'mail']
-    serverURL: https://waline-blue-nu.vercel.app/
+#  waline:
+#    pageView: true
+#    placeholder: "请文明发言"
+#    emoji: false
+#    imgUploader: false
+#    wordLimit: 200
+#    requiredMeta: ['nick', 'mail']
+#    serverURL: https://waline-blue-nu.vercel.app/
 
   # Artalk 评论插件
   # 更多配置信息请参考：https://artalk.js.org
@@ -817,19 +817,19 @@ params:
   # 更多配置信息请参考：https://utteranc.es
   # Utterances comments system
   # For more information: https://utteranc.es
-  # utterances:
-  #   # Github 仓库地址，格式：用户名/仓库名称
-  #   # Github repository owner and name
-  #   repo: username/repo-name
-  #   # 问题标题的模式，可选值：pathname | url | title | og:title
-  #   # Available values: pathname | url | title | og:title
-  #   issueTerm: pathname
-  #   # 问题的标签分类
-  #   # Label flag for Github issues
-  #   label: comments
-  #   # 主题可选值： github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
-  #   # Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
-  #   theme: preferred-color-scheme
+  utterances:
+     # Github 仓库地址，格式：用户名/仓库名称
+     # Github repository owner and name
+     repo: lemon-1997/lemon-1997.github.io
+     # 问题标题的模式，可选值：pathname | url | title | og:title
+     # Available values: pathname | url | title | og:title
+     issueTerm: pathname
+     # 问题的标签分类
+     # Label flag for Github issues
+     label: comments
+     # 主题可选值： github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
+     # Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
+     theme: preferred-color-scheme
 
   # Giscus 评论插件
   # 更多配置信息请参考：https://giscus.app
