@@ -767,7 +767,7 @@ params:
     # 如果设置为 false，将采用 active 参数的那个插件
     # Setting `true` means remembering the comment system selected by
     # the visitor, otherwise use the `active` setting comment system.
-    storage: false
+    storage: true
     # TODO
     # Lazyload all comment systems.
     # lazyload: false
@@ -775,12 +775,12 @@ params:
     # `name` 参数名可选值：livere | waline | utterances | artalk | giscus
     # Modify texts or order for any naves, here are some examples.
     nav:
-      - name: utterances
-        title: Utterances
+      - name: waline
+        title: Waline
         color: "#27ae60"
         weight: 2
-      - name: giscus
-        title: Giscus
+      - name: utterances
+        title: Utterances
         color: "#886ce4"
         weight: 1
 
@@ -788,14 +788,14 @@ params:
   # 更多配置信息请参考：https://waline.js.org/
   # Waline comments system
   # More info seee: https://waline.js.org/
-#  waline:
-#    pageView: true
-#    placeholder: "请文明发言"
-#    emoji: false
-#    imgUploader: false
-#    wordLimit: 200
-#    requiredMeta: ['nick', 'mail']
-#    serverURL: https://waline-blue-nu.vercel.app/
+  waline:
+    pageView: true
+    placeholder: "请文明发言"
+    emoji: false
+    imgUploader: false
+    wordLimit: 200
+    requiredMeta: ['nick', 'mail']
+    serverURL: https://waline-blue-nu.vercel.app/
 
   # Artalk 评论插件
   # 更多配置信息请参考：https://artalk.js.org
