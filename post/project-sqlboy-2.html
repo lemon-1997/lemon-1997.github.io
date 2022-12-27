@@ -1,0 +1,711 @@
+<!doctype html><html lang=zh-cn data-theme=light>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<meta name=theme-color content="#222" media="(prefers-color-scheme: light)">
+<meta name=generator content="Hugo 0.91.2">
+<link rel="shortcut icon" type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
+<link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
+<meta itemprop=name content="go自动化生成数据库curd代码（二）：go抽象语法树（AST）">
+<meta itemprop=description content="go抽象语法树介绍">
+<meta itemprop=datePublished zgotmplz>
+<meta itemprop=dateModified zgotmplz>
+<meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
+<meta itemprop=keywords content="go,generate,sqlboy,AST">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go自动化生成数据库curd代码（二）：go抽象语法树（AST）">
+<meta property="og:description" content="go抽象语法树介绍">
+<meta property="og:image" content="/imgs/lemon.jpg">
+<meta property="og:image:width" content="312">
+<meta property="og:image:height" content="312">
+<meta property="og:image:type" content="image/jpeg/png/svg/jpg">
+<meta property="og:url" content="https://lemon-1997.github.io/post/project-sqlboy-2.html">
+<meta property="og:site_name" content="lemon blog">
+<meta property="og:locale" content="zh-CN">
+<meta property="article:author" content="lemon">
+<meta property="article:published_time" content="2022-12-26 20:30:00 +0800 +0800">
+<meta property="article:modified_time" content="2022-12-26 20:30:00 +0800 +0800">
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css>
+<link rel=stylesheet href=/css/main.min.efa32aea2ef196e07d21feb2e63b9bdc157ad7c6cdcd98f7d548d0360296aab8.css>
+<style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
+<script type=text/javascript>(function(){localDB={set:function(b,c,a){if(a===0)return;const d=new Date,e=a*864e5,f={value:c,expiry:d.getTime()+e};localStorage.setItem(b,JSON.stringify(f))},get:function(a){const b=localStorage.getItem(a);if(!b)return void 0;const c=JSON.parse(b),d=new Date;return d.getTime()>c.expiry?(localStorage.removeItem(a),void 0):c.value}},theme={active:function(){const a=localDB.get('theme');if(a==void 0)return;theme.toggle(a),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(a){theme.toggle(a.matches?'dark':'light')})},toggle:function(a){document.documentElement.setAttribute('data-theme',a),localDB.set('theme',a,2);const b=document.querySelector('iframe.giscus-frame');if(b){const c={setConfig:{theme:a}};b.contentWindow.postMessage({giscus:c},'https://giscus.app')}}},theme.active()})(window)</script>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"project-sqlboy-2.html","permalink":"https://lemon-1997.github.io/post/project-sqlboy-2.html","title":"go自动化生成数据库curd代码（二）：go抽象语法树（AST）","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
+<script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",a.async=!1,a.defer=!0,document.head.appendChild(a),a.onload=function(){NexT.utils.fmtBusuanzi()}})</script>
+<title>go自动化生成数据库curd代码（二）：go抽象语法树（AST） - lemon blog</title>
+<noscript>
+<link rel=stylesheet href=/css/noscript.css>
+</noscript>
+</head>
+<body itemscope itemtype=http://schema.org/WebPage class=use-motion>
+<div class=headband></div>
+<main class=main>
+<header class=header itemscope itemtype=http://schema.org/WPHeader>
+<div class=header-inner>
+<div class=site-brand-container>
+<div class=site-nav-toggle>
+<div class=toggle aria-label=切换导航栏 role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+</div>
+<div class=site-meta>
+<a href=/ class=brand rel=start>
+<i class=logo-line></i>
+<h1 class=site-title>lemon blog</h1>
+<i class=logo-line></i>
+</a>
+<p class=site-subtitle itemprop=description>Hi there 👋</p>
+</div>
+<div class=site-nav-right>
+<div class="toggle popup-trigger">
+<i class="fa fa-search fa-fw fa-lg"></i>
+</div>
+</div>
+</div>
+<nav class=site-nav>
+<ul class="main-menu menu">
+<li class="menu-item menu-item-home">
+<a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页
+</a>
+</li>
+<li class="menu-item menu-item-about">
+<a href=/about/ class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于
+</a>
+</li>
+<li class="menu-item menu-item-archives">
+<a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>7</span>
+</a>
+</li>
+<li class="menu-item menu-item-search">
+<a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索
+</a>
+</li>
+</ul>
+</nav>
+<div class=search-pop-overlay>
+<div class="popup search-popup">
+<div class=search-header>
+<span class=search-icon>
+<i class="fa fa-search"></i>
+</span>
+<div class=search-input-container>
+<input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input>
+</div>
+<span class=popup-btn-close role=button>
+<i class="fa fa-times-circle"></i>
+</span>
+</div>
+<div class="search-result-container no-result">
+<div class=search-result-icon>
+<i class="fa fa-spinner fa-pulse fa-5x"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="toggle sidebar-toggle" role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+<aside class=sidebar>
+<div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+<ul class=sidebar-nav>
+<li class=sidebar-nav-toc>
+文章目录
+</li>
+<li class=sidebar-nav-overview>
+站点概览
+</li>
+</ul>
+<div class=sidebar-panel-container>
+<div class="post-toc-wrap sidebar-panel">
+<div class="post-toc animated"><nav id=TableOfContents>
+<ul>
+<li><a href=#ast>AST</a></li>
+<li><a href=#处理输入>处理输入</a></li>
+<li><a href=#编译时断言>编译时断言</a></li>
+<li><a href=#小结>小结</a></li>
+</ul>
+</nav></div>
+</div>
+<div class="site-overview-wrap sidebar-panel">
+<div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person>
+<img class=site-author-image itemprop=image alt=lemon src=/imgs/img-lazy-loading.gif data-src=/imgs/lemon.jpg>
+<p class=site-author-name itemprop=name>lemon</p>
+<div class=site-description itemprop=description>simple is better</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+<nav class=site-state>
+<div class="site-state-item site-state-posts">
+<a href=/archives/>
+<span class=site-state-item-count>7</span>
+<span class=site-state-item-name>日志</span>
+</a>
+</div>
+<div class="site-state-item site-state-categories">
+<a href=/categories/>
+<span class=site-state-item-count>5</span>
+<span class=site-state-item-name>分类</span>
+</a>
+</div>
+<div class="site-state-item site-state-tags">
+<a href=/tags/>
+<span class=site-state-item-count>10</span>
+<span class=site-state-item-name>标签</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="links-of-social site-overview-item animated">
+<span class=links-of-social-item>
+<a href=https://github.com/lemon-1997 title="Github → https://github.com/lemon-1997" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fab fa-github fa-fw hvr-icon"></i>Github
+</a>
+</span>
+<span class=links-of-social-item>
+<a href=mailto:lemom_1997@126.com title="E-Mail → mailto:lemom_1997@126.com" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fa fa-envelope fa-fw hvr-icon"></i>E-Mail
+</a>
+</span>
+</div>
+</div>
+</div>
+</div>
+<div id=siteinfo-card-widget class=sidebar-card-widget>
+<div class=item-headline>
+<i class="fas fa-chart-line"></i>
+<span>网站资讯</span>
+</div>
+<div class=siteinfo>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div>
+<div class=item-count id=runTimes data-publishdate=2022-08-15T21:47:46+08:00></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-user"></i>总访客数：
+</div>
+<div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-eye"></i>页面浏览：
+</div>
+<div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-font"></i>总字数：</div>
+<div class=item-count id=wordsCount data-count=8774></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div>
+<div class=item-count id=readTimes data-times=24></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div>
+<div class=item-count id=last-push-date data-lastpushdate=2022-12-26T20:30:00+08:00></div>
+</div>
+</div>
+</div>
+</aside>
+<div class=sidebar-dimmer></div>
+</header>
+<div class=tool-buttons>
+<div id=goto-comments class="button goto-comments" title=直达评论>
+<i class="fas fa-comments"></i>
+</div>
+<div id=goto-gtranslate class=button title=多语言翻译>
+<i class="fas fa-globe"></i>
+</div>
+<div id=toggle-theme class=button title=深浅模式切换>
+<i class="fas fa-adjust"></i>
+</div>
+<div class=back-to-top role=button title=返回顶部>
+<i class="fa fa-arrow-up"></i>
+<span>0%</span>
+</div>
+</div>
+<div class=reading-progress-bar></div>
+<a role=button class="book-mark-link book-mark-link-fixed"></a>
+<noscript>
+<div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<div class="main-inner post posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-sqlboy-2.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="go自动化生成数据库curd代码（二）：go抽象语法树（AST）">
+<meta itemprop=description content="go抽象语法树介绍">
+</span>
+<header class=post-header>
+<h1 class=post-title itemprop="name headline">go自动化生成数据库curd代码（二）：go抽象语法树（AST） </h1>
+<div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2022-12-26 20:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2022-12-26 20:30:00 +0800 +0800">2022-12-26</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
+<span itemprop=name>项目实战</span>
+</a>
+</span>
+</span>
+</div>
+<div class=post-meta-items>
+<span class=post-meta-item title=字数>
+<span class=post-meta-item-icon>
+<i class="far fa-file-word"></i>
+</span>
+<span class=post-meta-item-text>字数：</span><span>3028</span>
+</span>
+<span class=post-meta-item title=阅读>
+<span class=post-meta-item-icon>
+<i class="far fa-clock"></i>
+</span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>7分钟</span>
+</span>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/project-sqlboy-2.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+<span class=post-meta-item title=评论>
+<span class=post-meta-item-icon>
+<i class="far fa-comments"></i>
+</span>
+<span class=post-meta-item-text>
+评论：
+</span>
+<span class=waline-comment-count data-path=/post/project-sqlboy-2.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+</div>
+</div>
+</header>
+<div class="post-body autonumber" itemprop=articleBody>
+<p>在上一篇文章中，介绍了我对这个项目的想法，总体设计与思路，而在项目中AST是一个很重要的模块，他主要负责输入的解析，还负责部分代码生成工作。
+接下来，我将为大家介绍go中的抽象语法树，也会跟大家分享我是如何利用AST去实现功能的。</p>
+<h1 id=ast>AST</h1>
+<p>AST是go中的抽象语法树，许多代码生成工具，代码静态检测都离不开他。如果我们了解了AST，我们可以去实现一些好玩的东西。<br>
+go对节点的定义</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#75715e>// All node types implement the Node interface.
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Node</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Pos</span>() <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span> <span style=color:#75715e>// position of first character belonging to the node
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>End</span>() <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span> <span style=color:#75715e>// position of first character immediately after the node
+</span><span style=color:#75715e></span>}
+</code></pre></div><p>主要有 3 类节点：Expr（表达式）, Stmt（语句）, Decl（声明）</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#75715e>// All expression nodes implement the Expr interface.
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Expr</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Node</span>
+	<span style=color:#a6e22e>exprNode</span>()
+}
+
+<span style=color:#75715e>// All statement nodes implement the Stmt interface.
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Stmt</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Node</span>
+	<span style=color:#a6e22e>stmtNode</span>()
+}
+
+<span style=color:#75715e>// All declaration nodes implement the Decl interface.
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Decl</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Node</span>
+	<span style=color:#a6e22e>declNode</span>()
+}
+</code></pre></div><p>其中，我们着重要了解下Decl（声明节点），因为会经常用到，有三种Decl</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#75715e>// A declaration is represented by one of the following declaration nodes.
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> (
+	<span style=color:#75715e>// A BadDecl node is a placeholder for a declaration containing
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// syntax errors for which a correct declaration node cannot be
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// created.
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>BadDecl</span> <span style=color:#66d9ef>struct</span> {
+		<span style=color:#a6e22e>From</span>, <span style=color:#a6e22e>To</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span> <span style=color:#75715e>// position range of bad declaration
+</span><span style=color:#75715e></span>	}
+
+	<span style=color:#75715e>// A GenDecl node (generic declaration node) represents an import,
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// constant, type or variable declaration. A valid Lparen position
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// (Lparen.IsValid()) indicates a parenthesized declaration.
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// Relationship between Tok value and Specs element type:
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//	token.IMPORT  *ImportSpec
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//	token.CONST   *ValueSpec
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//	token.TYPE    *TypeSpec
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//	token.VAR     *ValueSpec
+</span><span style=color:#75715e></span>	<span style=color:#75715e>//
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>GenDecl</span> <span style=color:#66d9ef>struct</span> {
+		<span style=color:#a6e22e>Doc</span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>CommentGroup</span> <span style=color:#75715e>// associated documentation; or nil
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>TokPos</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span>     <span style=color:#75715e>// position of Tok
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Tok</span>    <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Token</span>   <span style=color:#75715e>// IMPORT, CONST, TYPE, or VAR
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Lparen</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span>     <span style=color:#75715e>// position of &#39;(&#39;, if any
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Specs</span>  []<span style=color:#a6e22e>Spec</span>
+		<span style=color:#a6e22e>Rparen</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span> <span style=color:#75715e>// position of &#39;)&#39;, if any
+</span><span style=color:#75715e></span>	}
+
+	<span style=color:#75715e>// A FuncDecl node represents a function declaration.
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>FuncDecl</span> <span style=color:#66d9ef>struct</span> {
+		<span style=color:#a6e22e>Doc</span>  <span style=color:#f92672>*</span><span style=color:#a6e22e>CommentGroup</span> <span style=color:#75715e>// associated documentation; or nil
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Recv</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>FieldList</span>    <span style=color:#75715e>// receiver (methods); or nil (functions)
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Name</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Ident</span>        <span style=color:#75715e>// function/method name
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Type</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>FuncType</span>     <span style=color:#75715e>// function signature: type and value parameters, results, and position of &#34;func&#34; keyword
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>Body</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>BlockStmt</span>    <span style=color:#75715e>// function body; or nil for external (non-Go) function
+</span><span style=color:#75715e></span>	}
+)
+</code></pre></div><p>通过注释我们可以大致得知，GenDecl用于表示import，const，type或变量声明，FunDecl用于表示函数声明。<br>
+那么，一个go文件会被抽象成什么样呢，下面是<code>ast.File</code>结构，后续也会经常用到</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>File</span> <span style=color:#66d9ef>struct</span> {
+	<span style=color:#a6e22e>Doc</span>        <span style=color:#f92672>*</span><span style=color:#a6e22e>CommentGroup</span>   <span style=color:#75715e>// associated documentation; or nil
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Package</span>    <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>Pos</span>       <span style=color:#75715e>// position of &#34;package&#34; keyword
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Name</span>       <span style=color:#f92672>*</span><span style=color:#a6e22e>Ident</span>          <span style=color:#75715e>// package name
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Decls</span>      []<span style=color:#a6e22e>Decl</span>          <span style=color:#75715e>// top-level declarations; or nil
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Scope</span>      <span style=color:#f92672>*</span><span style=color:#a6e22e>Scope</span>          <span style=color:#75715e>// package scope (this file only)
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Imports</span>    []<span style=color:#f92672>*</span><span style=color:#a6e22e>ImportSpec</span>   <span style=color:#75715e>// imports in this file
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Unresolved</span> []<span style=color:#f92672>*</span><span style=color:#a6e22e>Ident</span>        <span style=color:#75715e>// unresolved identifiers in this file
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>Comments</span>   []<span style=color:#f92672>*</span><span style=color:#a6e22e>CommentGroup</span> <span style=color:#75715e>// list of all comments in the source file
+</span><span style=color:#75715e></span>}
+</code></pre></div><p>注释其实也解释的很清楚，有两个关键字段，一个是Name，用于我们提取包名，另外一个是Decls，const变量的声明。<br>
+有了该结构，思路也就来了，只要能拿到改结构体，事情就好办了，不过在开始写代码前，我们还要了解一下这个函数</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Inspect</span>(<span style=color:#a6e22e>node</span> <span style=color:#a6e22e>Node</span>, <span style=color:#a6e22e>f</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>Node</span>) <span style=color:#66d9ef>bool</span>) {
+	<span style=color:#a6e22e>Walk</span>(<span style=color:#a6e22e>inspector</span>(<span style=color:#a6e22e>f</span>), <span style=color:#a6e22e>node</span>)
+}
+</code></pre></div><p>go官方怕我们对结构不熟悉，加上语法树层级复杂，嵌套的关系，这里贴心的帮我们实现了遍历的方法。
+不过在这个项目我并没有用到，一个是我觉得遍历效率低，另一个是我的嵌套并不会很深，直接获取就行了。</p>
+<h1 id=处理输入>处理输入</h1>
+<p>简单了解了AST后，我们就可以准备实现了。首先，我们定义我们的目标，一个是提取文件的包名，另一个是提取const变量以及对应的sql语句。
+如何简单又快速的实现呢，这里推荐两种方法，一个是直接到
+<a href=https://yuroyoro.github.io/goast-viewer/ title="go AST viewer" rel="noopener external nofollow noreferrer" target=_blank class=exturl>
+go AST viewer
+<i class="fa fa-external-link-alt"></i>
+</a>网站上去看解析的结果，另一个是自己debug，将需要解析的文件AST抽象后看里面的结构。<br>
+假设我们有以下文件有解析</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>sqlboy</span>
+
+<span style=color:#66d9ef>const</span> (
+	<span style=color:#a6e22e>order</span> = <span style=color:#e6db74>`
+</span><span style=color:#e6db74>-- order_info definition
+</span><span style=color:#e6db74>
+</span><span style=color:#e6db74>CREATE TABLE &#39;order_info&#39; (
+</span><span style=color:#e6db74>  &#39;id&#39; int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;自增ID&#39;,
+</span><span style=color:#e6db74>  &#39;order_id&#39; varchar(20) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;订单号&#39;,
+</span><span style=color:#e6db74>  &#39;status&#39; tinyint(3) NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;订单状态&#39;,
+</span><span style=color:#e6db74>  &#39;created_at&#39; timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,
+</span><span style=color:#e6db74>  &#39;updated_at&#39; timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,
+</span><span style=color:#e6db74>  PRIMARY KEY (&#39;id&#39;),
+</span><span style=color:#e6db74>  UNIQUE KEY &#39;uk_order&#39; (&#39;order_id&#39;)
+</span><span style=color:#e6db74>) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&#39;订单表&#39;;
+</span><span style=color:#e6db74>`</span>
+)
+</code></pre></div><p>经过抽象后</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>     0  *ast.File {
+     1  .  Doc: nil
+     2  .  Package: foo:1:1
+     3  .  Name: *ast.Ident {
+     4  .  .  NamePos: foo:1:9
+     5  .  .  Name: &#34;sqlboy&#34;
+     6  .  .  Obj: nil
+     7  .  }
+     8  .  Decls: []ast.Decl (len = 1) {
+     9  .  .  0: *ast.GenDecl {
+    10  .  .  .  Doc: nil
+    11  .  .  .  TokPos: foo:3:1
+    12  .  .  .  Tok: const
+    13  .  .  .  Lparen: foo:3:7
+    14  .  .  .  Specs: []ast.Spec (len = 1) {
+    15  .  .  .  .  0: *ast.ValueSpec {
+    16  .  .  .  .  .  Doc: nil
+    17  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    18  .  .  .  .  .  .  0: *ast.Ident {
+    19  .  .  .  .  .  .  .  NamePos: foo:4:2
+    20  .  .  .  .  .  .  .  Name: &#34;order&#34;
+    21  .  .  .  .  .  .  .  Obj: *ast.Object {
+    22  .  .  .  .  .  .  .  .  Kind: const
+    23  .  .  .  .  .  .  .  .  Name: &#34;order&#34;
+    24  .  .  .  .  .  .  .  .  Decl: *(obj @ 15)
+    25  .  .  .  .  .  .  .  .  Data: 0
+    26  .  .  .  .  .  .  .  .  Type: nil
+    27  .  .  .  .  .  .  .  }
+    28  .  .  .  .  .  .  }
+    29  .  .  .  .  .  }
+    30  .  .  .  .  .  Type: nil
+    31  .  .  .  .  .  Values: []ast.Expr (len = 1) {
+    32  .  .  .  .  .  .  0: *ast.BasicLit {
+    33  .  .  .  .  .  .  .  ValuePos: foo:4:10
+    34  .  .  .  .  .  .  .  Kind: STRING
+    35  .  .  .  .  .  .  .  Value: &#34;`\n-- order_info definition\n\nCREATE TABLE &#39;order_info&#39; (\n  &#39;id&#39; int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT &#39;自增ID&#39;,\n  &#39;order_id&#39; varchar(20) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;订单号&#39;,\n  &#39;status&#39; tinyint(3) NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;订单状态&#39;,\n  &#39;created_at&#39; timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;创建时间&#39;,\n  &#39;updated_at&#39; timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT &#39;修改时间&#39;,\n  PRIMARY KEY (&#39;id&#39;),\n  UNIQUE KEY &#39;uk_order&#39; (&#39;order_id&#39;)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&#39;订单表&#39;;\n`&#34;
+    36  .  .  .  .  .  .  }
+    37  .  .  .  .  .  }
+    38  .  .  .  .  .  Comment: nil
+    39  .  .  .  .  }
+    40  .  .  .  }
+    41  .  .  .  Rparen: foo:17:1
+    42  .  .  }
+    43  .  }
+    44  .  Scope: *ast.Scope {
+    45  .  .  Outer: nil
+    46  .  .  Objects: map[string]*ast.Object (len = 1) {
+    47  .  .  .  &#34;order&#34;: *(obj @ 21)
+    48  .  .  }
+    49  .  }
+    50  .  Imports: nil
+    51  .  Unresolved: nil
+    52  .  Comments: nil
+    53  }
+</code></pre></div><p>因此，我们可以写出以下解析代码</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>parse</span>(<span style=color:#a6e22e>file</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>File</span>) (<span style=color:#a6e22e>packageName</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>ddl</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>) {
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>file</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+		<span style=color:#66d9ef>return</span>
+	}
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+		<span style=color:#a6e22e>packageName</span> = <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Name</span>.<span style=color:#a6e22e>Name</span>
+	}
+	<span style=color:#a6e22e>ddl</span> = make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>)
+	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>decl</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Decls</span> {
+		<span style=color:#a6e22e>genDecl</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>decl</span>.(<span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>GenDecl</span>)
+		<span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>ok</span> {
+			<span style=color:#66d9ef>continue</span>
+		}
+		<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>genDecl</span>.<span style=color:#a6e22e>Tok</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>CONST</span> {
+			<span style=color:#66d9ef>continue</span>
+		}
+		<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>spec</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>genDecl</span>.<span style=color:#a6e22e>Specs</span> {
+			<span style=color:#a6e22e>valueSpec</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>spec</span>.(<span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>ValueSpec</span>)
+			<span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>ok</span> {
+				<span style=color:#66d9ef>continue</span>
+			}
+			<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>valueSpec</span>.<span style=color:#a6e22e>Names</span> {
+				<span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>valueSpec</span>.<span style=color:#a6e22e>Values</span>[<span style=color:#a6e22e>i</span>].(<span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>BasicLit</span>)
+				<span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>ok</span> {
+					<span style=color:#66d9ef>continue</span>
+				}
+				<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>value</span>.<span style=color:#a6e22e>Kind</span> <span style=color:#f92672>!=</span> <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>STRING</span> {
+					<span style=color:#66d9ef>continue</span>
+				}
+				<span style=color:#a6e22e>ddl</span>[<span style=color:#a6e22e>valueSpec</span>.<span style=color:#a6e22e>Names</span>[<span style=color:#a6e22e>i</span>].<span style=color:#a6e22e>Name</span>] = <span style=color:#a6e22e>value</span>.<span style=color:#a6e22e>Value</span>
+			}
+		}
+	}
+	<span style=color:#66d9ef>return</span>
+}
+</code></pre></div><p>这样一来，我们就实现了第一步对输入文件的解析，可能有的人会发现，上面的parse函数需要<code>*ast.File</code>结构，如何获得呢？<br>
+go已经帮我们实现好了，在<code>$GOROOT/src/go/parser/interface.go</code></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>ParseFile</span>(<span style=color:#a6e22e>fset</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>FileSet</span>, <span style=color:#a6e22e>filename</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>src</span> <span style=color:#a6e22e>any</span>, <span style=color:#a6e22e>mode</span> <span style=color:#a6e22e>Mode</span>) (<span style=color:#a6e22e>f</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>File</span>, <span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>)
+</code></pre></div><p>只需要提供文件路径，如果该文件没有语法错误的话，我们就能构建出<code>*ast.File</code></p>
+<h1 id=编译时断言>编译时断言</h1>
+<p>在上一节说到，我们定义了输入的文件，建表的sql语句必须是const变量。这里我解释下，const主要是为了实现编译时断言。
+什么是编译时断言呢，就是在编译时就能直接告诉你错误，无法编译通过。
+许多自动化生成代码工具都会用到编译时断言，例如断言引用第三方库的版本，断言接口的实现，只要不符合，编译时就能及时发现，避免bug发生。<br>
+这里分享几个编译断言的技巧</p>
+<ul>
+<li>断言常量N不小于另一个常量M</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>_</span>(<span style=color:#a6e22e>x</span> []<span style=color:#66d9ef>int</span>) {<span style=color:#a6e22e>_</span> = <span style=color:#a6e22e>x</span>[<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]}
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>_</span>(){<span style=color:#a6e22e>_</span> = []<span style=color:#66d9ef>int</span>{<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>: <span style=color:#ae81ff>0</span>}}
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>_</span>([<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>){}
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>_</span> <span style=color:#66d9ef>uint</span> = <span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>
+</code></pre></div><ul>
+<li>断言两个整数常量相等</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>; <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>M</span><span style=color:#f92672>-</span><span style=color:#a6e22e>N</span>]<span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>; <span style=color:#66d9ef>type</span> <span style=color:#a6e22e>_</span> [<span style=color:#a6e22e>M</span><span style=color:#f92672>-</span><span style=color:#a6e22e>N</span>]<span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>_</span> <span style=color:#66d9ef>uint</span> = <span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>, <span style=color:#a6e22e>M</span><span style=color:#f92672>-</span><span style=color:#a6e22e>N</span>
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>_</span>([<span style=color:#a6e22e>N</span><span style=color:#f92672>-</span><span style=color:#a6e22e>M</span>]<span style=color:#66d9ef>int</span>, [<span style=color:#a6e22e>M</span><span style=color:#f92672>-</span><span style=color:#a6e22e>N</span>]<span style=color:#66d9ef>int</span>) {}
+</code></pre></div><ul>
+<li>断言一个常量字符串是不是一个空串</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>_</span> [len(<span style=color:#a6e22e>aStringConstant</span>)<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]<span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> = <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>bool</span>]<span style=color:#66d9ef>int</span>{<span style=color:#66d9ef>false</span>: <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>aStringConstant</span> <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#34;&#34;</span>: <span style=color:#ae81ff>1</span>}
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> = <span style=color:#a6e22e>aStringConstant</span>[:<span style=color:#ae81ff>1</span>]
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>_</span> = <span style=color:#a6e22e>aStringConstant</span>[<span style=color:#ae81ff>0</span>]
+<span style=color:#66d9ef>const</span> <span style=color:#a6e22e>_</span> = <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span>len(<span style=color:#a6e22e>aStringConstant</span>)
+</code></pre></div><ul>
+<li>断言字符串相等</li>
+</ul>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>const</span> (
+    <span style=color:#a6e22e>order</span> = <span style=color:#e6db74>`order_info`</span>
+    <span style=color:#a6e22e>product</span> = <span style=color:#e6db74>`product_info`</span>
+)
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>_</span>() {
+	<span style=color:#a6e22e>_</span> = <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>bool</span>]<span style=color:#66d9ef>struct</span> {
+	}{<span style=color:#66d9ef>false</span>: {}, <span style=color:#a6e22e>order</span> <span style=color:#f92672>==</span> <span style=color:#e6db74>`order_info`</span>: {}}
+	<span style=color:#a6e22e>_</span> = <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>bool</span>]<span style=color:#66d9ef>struct</span> {
+	}{<span style=color:#66d9ef>false</span>: {}, <span style=color:#a6e22e>product</span> <span style=color:#f92672>==</span> <span style=color:#e6db74>`product_info`</span>: {}}
+}
+</code></pre></div><p>这个项目我用到了断言字符串相等，我保证了一旦建表语句sql被修改了，就必须重新生成断言文件，不然就无法编译通过。<br>
+确定了断言的方式之后，我们可以先看下断言文件对应的抽象语法树，然后再去编写代码，这里结构会复杂点，我就不放上来，直接贴实现的代码</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>buildAssertAST</span>(<span style=color:#a6e22e>packageName</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>paths</span>, <span style=color:#a6e22e>asserts</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>File</span> {
+	<span style=color:#a6e22e>importSpecs</span> <span style=color:#f92672>:=</span> make([]<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Spec</span>, <span style=color:#ae81ff>0</span>)
+	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>name</span>, <span style=color:#a6e22e>path</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>paths</span> {
+		<span style=color:#a6e22e>importSpecs</span> = append(<span style=color:#a6e22e>importSpecs</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>ImportSpec</span>{
+			<span style=color:#a6e22e>Name</span>: <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#a6e22e>name</span>),
+			<span style=color:#a6e22e>Path</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>BasicLit</span>{<span style=color:#a6e22e>Kind</span>: <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>STRING</span>, <span style=color:#a6e22e>Value</span>: <span style=color:#a6e22e>path</span>},
+		})
+	}
+
+	<span style=color:#a6e22e>maps</span> <span style=color:#f92672>:=</span> make([]<span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>CompositeLit</span>, <span style=color:#ae81ff>0</span>)
+	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>asserts</span> {
+		<span style=color:#a6e22e>elts</span> <span style=color:#f92672>:=</span> make([]<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Expr</span>, <span style=color:#ae81ff>0</span>)
+		<span style=color:#a6e22e>elts</span> = append(<span style=color:#a6e22e>elts</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>KeyValueExpr</span>{
+			<span style=color:#a6e22e>Key</span>:   <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#e6db74>&#34;false&#34;</span>),
+			<span style=color:#a6e22e>Value</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>CompositeLit</span>{},
+		})
+		<span style=color:#a6e22e>elts</span> = append(<span style=color:#a6e22e>elts</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>KeyValueExpr</span>{
+			<span style=color:#a6e22e>Key</span>:   <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>BinaryExpr</span>{<span style=color:#a6e22e>X</span>: <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#a6e22e>k</span>), <span style=color:#a6e22e>Op</span>: <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>EQL</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>BasicLit</span>{<span style=color:#a6e22e>Kind</span>: <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>STRING</span>, <span style=color:#a6e22e>Value</span>: <span style=color:#a6e22e>v</span>}},
+			<span style=color:#a6e22e>Value</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>CompositeLit</span>{},
+		})
+		<span style=color:#a6e22e>maps</span> = append(<span style=color:#a6e22e>maps</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>CompositeLit</span>{
+			<span style=color:#a6e22e>Type</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>MapType</span>{<span style=color:#a6e22e>Key</span>: <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#e6db74>&#34;bool&#34;</span>), <span style=color:#a6e22e>Value</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>StructType</span>{<span style=color:#a6e22e>Fields</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>FieldList</span>{}}},
+			<span style=color:#a6e22e>Elts</span>: <span style=color:#a6e22e>elts</span>,
+		})
+	}
+
+	<span style=color:#a6e22e>assignList</span> <span style=color:#f92672>:=</span> make([]<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Stmt</span>, <span style=color:#ae81ff>0</span>)
+	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>item</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>maps</span> {
+		<span style=color:#a6e22e>assignList</span> = append(<span style=color:#a6e22e>assignList</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>AssignStmt</span>{
+			<span style=color:#a6e22e>Lhs</span>: []<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Expr</span>{<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#e6db74>&#34;_&#34;</span>)},
+			<span style=color:#a6e22e>Tok</span>: <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>ASSIGN</span>,
+			<span style=color:#a6e22e>Rhs</span>: []<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Expr</span>{<span style=color:#a6e22e>item</span>},
+		})
+	}
+
+	<span style=color:#a6e22e>decls</span> <span style=color:#f92672>:=</span> make([]<span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Decl</span>, <span style=color:#ae81ff>0</span>)
+	<span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>paths</span>) <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> {
+		<span style=color:#a6e22e>decls</span> = append(<span style=color:#a6e22e>decls</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>GenDecl</span>{<span style=color:#a6e22e>Tok</span>: <span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>IMPORT</span>, <span style=color:#a6e22e>Specs</span>: <span style=color:#a6e22e>importSpecs</span>})
+	}
+	<span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>asserts</span>) <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> {
+		<span style=color:#a6e22e>decls</span> = append(<span style=color:#a6e22e>decls</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>FuncDecl</span>{
+			<span style=color:#a6e22e>Doc</span>:  <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>CommentGroup</span>{<span style=color:#a6e22e>List</span>: []<span style=color:#f92672>*</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>Comment</span>{{<span style=color:#a6e22e>Text</span>: <span style=color:#e6db74>&#34;//compile-time assertion&#34;</span>}}},
+			<span style=color:#a6e22e>Name</span>: <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#e6db74>&#34;_&#34;</span>),
+			<span style=color:#a6e22e>Type</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>FuncType</span>{},
+			<span style=color:#a6e22e>Body</span>: <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>BlockStmt</span>{<span style=color:#a6e22e>List</span>: <span style=color:#a6e22e>assignList</span>},
+		})
+	}
+
+	<span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>File</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#a6e22e>ast</span>.<span style=color:#a6e22e>NewIdent</span>(<span style=color:#a6e22e>packageName</span>), <span style=color:#a6e22e>Decls</span>: <span style=color:#a6e22e>decls</span>}
+}
+</code></pre></div><p>到这里，我们不仅能解析用户的输入，还能构建出断言文件的抽象语法树。不过还差一步，就是将<code>ast.File</code>输出成<code>.go</code>文件。
+当然，go也已经帮我们实现好了，在<code>$GOROOT/src/go/format/format.go</code></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Node</span>(<span style=color:#a6e22e>dst</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Writer</span>, <span style=color:#a6e22e>fset</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>token</span>.<span style=color:#a6e22e>FileSet</span>, <span style=color:#a6e22e>node</span> <span style=color:#a6e22e>any</span>) <span style=color:#66d9ef>error</span> 
+</code></pre></div><p>这里的参数是<code>io.Writer</code>，也就是你想输出到哪里都行，只要是实现了<code>io.Writer</code>的接口就行。</p>
+<h1 id=小结>小结</h1>
+<p>到这里我们迈出了第一步，定义了输入的文件，并且通过AST将文件解析，提取出我们需要的东西，再将其生成编译时断言的文件。
+不过这才刚刚开始，我们仅仅是实现了最简单的一部分，后面还有更难的要解决。下一篇文章是如何去实现对sql的解析，是关于antrl4的，有兴趣的可以看一下。<br>
+项目源码：https://github.com/lemon-1997/sqlboy</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/go>
+go
+</a>
+<a href=/tags/generate>
+generate
+</a>
+<a href=/tags/sqlboy>
+sqlboy
+</a>
+<a href=/tags/ast>
+AST
+</a>
+</div>
+<div class=addthis_inline_share_toolbox style=text-align:center></div>
+<hr>
+<div class=post-nav>
+<div class="post-nav-next post-nav-item">
+<a href=/post/project-sqlboy.html rel=next title=go自动化生成数据库curd代码（一）：想法与设计>
+<i class="fa fa-chevron-left"></i> go自动化生成数据库curd代码（一）：想法与设计
+</a>
+</div>
+<div class="post-nav-prev post-nav-item">
+<a href=/post/best-test.html rel=prev title=如何在go中写好单元测试>
+如何在go中写好单元测试
+<i class="fa fa-chevron-right"></i>
+</a>
+</div>
+</div>
+</footer>
+</article>
+</div>
+<div id=comments class=post-comments>
+<div class=comment-head>
+<div class=comment-headline>
+<i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span>
+</div>
+<div class=comment-switch>
+<span class=first-comment>Utterances</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span>
+</div>
+</div>
+<div class=comment-wrap>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=utterances-container></div>
+</div>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=waline-container></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class=footer>
+<div class=footer-inner>
+<div id=gtranslate class=google-translate>
+<i class="fa fa-language"></i>
+<div id=google_translate_element></div>
+</div>
+<div class=copyright>
+&copy;
+<span itemprop=copyrightYear>
+2022
+</span>
+<span class=with-love>
+<i class="fa fa-lemon"></i>
+</span>
+<span class=author itemprop=copyrightHolder>lemon</span>
+</div>
+</div>
+</footer>
+<script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
+<script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":false},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"utterances":{"cfg":{"issueterm":"pathname","label":"comments","repo":"lemon-1997/lemon-1997.github.io","theme":"preferred-color-scheme"},"js":"https://utteranc.es/client.js"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","sofa":"快来发表你的意见吧","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script>
+<script type=text/javascript src=/js/main.min.63932a6e8faa0bb69dd7b4369aa7e5a1e84c66c5561c6a2ea11eb365a2ea549e.js defer></script>
+</body>
+</html>
