@@ -3,8 +3,8 @@ title: "go自动化生成数据库curd代码（二）：go抽象语法树（AST�
 description: "go抽象语法树介绍"
 keywords: "go,AST"
 
-publishDate: 2022-12-26T20:30:00+08:00
-lastmod: 2022-12-26T20:30:00+08:00
+publishDate: 2022-12-27T20:30:00+08:00
+lastmod: 2022-12-27T20:30:00+08:00
 
 categories:
 - 项目实战
