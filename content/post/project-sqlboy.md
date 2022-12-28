@@ -209,11 +209,11 @@ func (d *OrderInfoImpl) BatchCreateOrderInfo(ctx context.Context, list []*OrderI
 - go AST  
 这个在前文有提到过，用来做输入的解析，建表语句的读取。这里我还把部分输出任务也给了他
 （其实输出不应该用AST，效率低，且难以维护，这里只是为了尝试）
-- antrl4 vs yacc  
+- ANTLR vs yacc  
 调研的时候发现很多ddl to struct的项目都是直接引用的一个使用yacc解析sql的库。
-不过在经过对比之后，我发现yacc比较古老，而且还得自己去实现分词，因此直接放弃，采用更先进的antrl4。
+不过在经过对比之后，我发现yacc比较古老，而且还得自己去实现分词，因此直接放弃，采用更先进的ANTLR。
 - go template  
-输出是用的go原生text/template渲染，为了减少依赖，除了antrl，就没打算用第三方库。
+输出是用的go原生text/template渲染，为了减少依赖，除了ANTLR，就没打算用第三方库。
 
 # 整体架构
 ![image](https://github.com/lemon-1997/sqlboy/blob/main/img/sqlboy.PNG?raw=true)
