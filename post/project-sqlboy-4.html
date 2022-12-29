@@ -1,0 +1,570 @@
+<!doctype html><html lang=zh-cn data-theme=light>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<meta name=theme-color content="#222" media="(prefers-color-scheme: light)">
+<meta name=generator content="Hugo 0.91.2">
+<link rel="shortcut icon" type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
+<link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
+<meta itemprop=name content="go自动化生成数据库curd代码（四）：模板生成">
+<meta itemprop=description content="go官方包template生成代码">
+<meta itemprop=datePublished zgotmplz>
+<meta itemprop=dateModified zgotmplz>
+<meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
+<meta itemprop=keywords content="go,generate,sqlboy,template">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go自动化生成数据库curd代码（四）：模板生成">
+<meta property="og:description" content="go官方包template生成代码">
+<meta property="og:image" content="/imgs/lemon.jpg">
+<meta property="og:image:width" content="312">
+<meta property="og:image:height" content="312">
+<meta property="og:image:type" content="image/jpeg/png/svg/jpg">
+<meta property="og:url" content="https://lemon-1997.github.io/post/project-sqlboy-4.html">
+<meta property="og:site_name" content="lemon blog">
+<meta property="og:locale" content="zh-CN">
+<meta property="article:author" content="lemon">
+<meta property="article:published_time" content="2022-12-29 20:28:00 +0800 +0800">
+<meta property="article:modified_time" content="2022-12-29 20:28:00 +0800 +0800">
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css>
+<link rel=stylesheet href=/css/main.min.efa32aea2ef196e07d21feb2e63b9bdc157ad7c6cdcd98f7d548d0360296aab8.css>
+<style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
+<script type=text/javascript>(function(){localDB={set:function(b,c,a){if(a===0)return;const d=new Date,e=a*864e5,f={value:c,expiry:d.getTime()+e};localStorage.setItem(b,JSON.stringify(f))},get:function(a){const b=localStorage.getItem(a);if(!b)return void 0;const c=JSON.parse(b),d=new Date;return d.getTime()>c.expiry?(localStorage.removeItem(a),void 0):c.value}},theme={active:function(){const a=localDB.get('theme');if(a==void 0)return;theme.toggle(a),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(a){theme.toggle(a.matches?'dark':'light')})},toggle:function(a){document.documentElement.setAttribute('data-theme',a),localDB.set('theme',a,2);const b=document.querySelector('iframe.giscus-frame');if(b){const c={setConfig:{theme:a}};b.contentWindow.postMessage({giscus:c},'https://giscus.app')}}},theme.active()})(window)</script>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"project-sqlboy-4.html","permalink":"https://lemon-1997.github.io/post/project-sqlboy-4.html","title":"go自动化生成数据库curd代码（四）：模板生成","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
+<script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",a.async=!1,a.defer=!0,document.head.appendChild(a),a.onload=function(){NexT.utils.fmtBusuanzi()}})</script>
+<title>go自动化生成数据库curd代码（四）：模板生成 - lemon blog</title>
+<noscript>
+<link rel=stylesheet href=/css/noscript.css>
+</noscript>
+</head>
+<body itemscope itemtype=http://schema.org/WebPage class=use-motion>
+<div class=headband></div>
+<main class=main>
+<header class=header itemscope itemtype=http://schema.org/WPHeader>
+<div class=header-inner>
+<div class=site-brand-container>
+<div class=site-nav-toggle>
+<div class=toggle aria-label=切换导航栏 role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+</div>
+<div class=site-meta>
+<a href=/ class=brand rel=start>
+<i class=logo-line></i>
+<h1 class=site-title>lemon blog</h1>
+<i class=logo-line></i>
+</a>
+<p class=site-subtitle itemprop=description>Hi there 👋</p>
+</div>
+<div class=site-nav-right>
+<div class="toggle popup-trigger">
+<i class="fa fa-search fa-fw fa-lg"></i>
+</div>
+</div>
+</div>
+<nav class=site-nav>
+<ul class="main-menu menu">
+<li class="menu-item menu-item-home">
+<a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页
+</a>
+</li>
+<li class="menu-item menu-item-about">
+<a href=/about/ class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于
+</a>
+</li>
+<li class="menu-item menu-item-archives">
+<a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>9</span>
+</a>
+</li>
+<li class="menu-item menu-item-search">
+<a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索
+</a>
+</li>
+</ul>
+</nav>
+<div class=search-pop-overlay>
+<div class="popup search-popup">
+<div class=search-header>
+<span class=search-icon>
+<i class="fa fa-search"></i>
+</span>
+<div class=search-input-container>
+<input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input>
+</div>
+<span class=popup-btn-close role=button>
+<i class="fa fa-times-circle"></i>
+</span>
+</div>
+<div class="search-result-container no-result">
+<div class=search-result-icon>
+<i class="fa fa-spinner fa-pulse fa-5x"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="toggle sidebar-toggle" role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+<aside class=sidebar>
+<div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+<ul class=sidebar-nav>
+<li class=sidebar-nav-toc>
+文章目录
+</li>
+<li class=sidebar-nav-overview>
+站点概览
+</li>
+</ul>
+<div class=sidebar-panel-container>
+<div class="post-toc-wrap sidebar-panel">
+<div class="post-toc animated"><nav id=TableOfContents>
+<ul>
+<li><a href=#template使用>template使用</a>
+<ul>
+<li><a href=#模板数据>模板数据</a></li>
+<li><a href=#空白去除>空白去除</a></li>
+<li><a href=#常用的action>常用的Action</a></li>
+<li><a href=#变量>变量</a></li>
+<li><a href=#函数>函数</a></li>
+<li><a href=#模板定义>模板定义</a></li>
+</ul>
+</li>
+<li><a href=#静态文件>静态文件</a></li>
+<li><a href=#动态文件>动态文件</a></li>
+<li><a href=#小结>小结</a></li>
+</ul>
+</nav></div>
+</div>
+<div class="site-overview-wrap sidebar-panel">
+<div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person>
+<img class=site-author-image itemprop=image alt=lemon src=/imgs/img-lazy-loading.gif data-src=/imgs/lemon.jpg>
+<p class=site-author-name itemprop=name>lemon</p>
+<div class=site-description itemprop=description>simple is better</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+<nav class=site-state>
+<div class="site-state-item site-state-posts">
+<a href=/archives/>
+<span class=site-state-item-count>9</span>
+<span class=site-state-item-name>日志</span>
+</a>
+</div>
+<div class="site-state-item site-state-categories">
+<a href=/categories/>
+<span class=site-state-item-count>5</span>
+<span class=site-state-item-name>分类</span>
+</a>
+</div>
+<div class="site-state-item site-state-tags">
+<a href=/tags/>
+<span class=site-state-item-count>12</span>
+<span class=site-state-item-name>标签</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="links-of-social site-overview-item animated">
+<span class=links-of-social-item>
+<a href=https://github.com/lemon-1997 title="Github → https://github.com/lemon-1997" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fab fa-github fa-fw hvr-icon"></i>Github
+</a>
+</span>
+<span class=links-of-social-item>
+<a href=mailto:lemom_1997@126.com title="E-Mail → mailto:lemom_1997@126.com" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fa fa-envelope fa-fw hvr-icon"></i>E-Mail
+</a>
+</span>
+</div>
+</div>
+</div>
+</div>
+<div id=siteinfo-card-widget class=sidebar-card-widget>
+<div class=item-headline>
+<i class="fas fa-chart-line"></i>
+<span>网站资讯</span>
+</div>
+<div class=siteinfo>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div>
+<div class=item-count id=runTimes data-publishdate=2022-08-15T21:47:46+08:00></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-user"></i>总访客数：
+</div>
+<div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-eye"></i>页面浏览：
+</div>
+<div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-font"></i>总字数：</div>
+<div class=item-count id=wordsCount data-count=12607></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div>
+<div class=item-count id=readTimes data-times=33></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div>
+<div class=item-count id=last-push-date data-lastpushdate=2022-12-29T20:28:00+08:00></div>
+</div>
+</div>
+</div>
+</aside>
+<div class=sidebar-dimmer></div>
+</header>
+<div class=tool-buttons>
+<div id=goto-comments class="button goto-comments" title=直达评论>
+<i class="fas fa-comments"></i>
+</div>
+<div id=goto-gtranslate class=button title=多语言翻译>
+<i class="fas fa-globe"></i>
+</div>
+<div id=toggle-theme class=button title=深浅模式切换>
+<i class="fas fa-adjust"></i>
+</div>
+<div class=back-to-top role=button title=返回顶部>
+<i class="fa fa-arrow-up"></i>
+<span>0%</span>
+</div>
+</div>
+<div class=reading-progress-bar></div>
+<a role=button class="book-mark-link book-mark-link-fixed"></a>
+<noscript>
+<div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<div class="main-inner post posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-sqlboy-4.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="go自动化生成数据库curd代码（四）：模板生成">
+<meta itemprop=description content="go官方包template生成代码">
+</span>
+<header class=post-header>
+<h1 class=post-title itemprop="name headline">go自动化生成数据库curd代码（四）：模板生成 </h1>
+<div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2022-12-29 20:28:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2022-12-29 20:28:00 +0800 +0800">2022-12-29</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
+<span itemprop=name>项目实战</span>
+</a>
+</span>
+</span>
+</div>
+<div class=post-meta-items>
+<span class=post-meta-item title=字数>
+<span class=post-meta-item-icon>
+<i class="far fa-file-word"></i>
+</span>
+<span class=post-meta-item-text>字数：</span><span>2046</span>
+</span>
+<span class=post-meta-item title=阅读>
+<span class=post-meta-item-icon>
+<i class="far fa-clock"></i>
+</span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>5分钟</span>
+</span>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/project-sqlboy-4.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+<span class=post-meta-item title=评论>
+<span class=post-meta-item-icon>
+<i class="far fa-comments"></i>
+</span>
+<span class=post-meta-item-text>
+评论：
+</span>
+<span class=waline-comment-count data-path=/post/project-sqlboy-4.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+</div>
+</div>
+</header>
+<div class="post-body autonumber" itemprop=articleBody>
+<p>上一节我们完成了对SQL的解析，得到了表的相关信息。根据这些信息，我们就可以确定表相对应的curd代码，生成代码我们使用go自带的标准包text/template。
+下面将为大家介绍template，并使用template实现代码生成功能。</p>
+<h1 id=template使用>template使用</h1>
+<h2 id=模板数据>模板数据</h2>
+<p>下面的例子，执行完会输出<code>10 items</code></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Data</span> <span style=color:#66d9ef>struct</span> {
+	<span style=color:#a6e22e>Count</span>    <span style=color:#66d9ef>uint</span>
+}
+<span style=color:#a6e22e>tmpl</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>template</span>.<span style=color:#a6e22e>New</span>(<span style=color:#e6db74>&#34;test&#34;</span>).<span style=color:#a6e22e>Parse</span>(<span style=color:#e6db74>&#34;{{.Count}} items&#34;</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> { panic(<span style=color:#a6e22e>err</span>) }
+<span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>tmpl</span>.<span style=color:#a6e22e>Execute</span>(<span style=color:#a6e22e>os</span>.<span style=color:#a6e22e>Stdout</span>, <span style=color:#a6e22e>Data</span>{<span style=color:#a6e22e>Count</span>: <span style=color:#ae81ff>10</span>})
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> { panic(<span style=color:#a6e22e>err</span>) }
+</code></pre></div><p>模板里<code>{{.Count}}</code>指的从当前对象取<code>Count</code>变量，其中<code>.</code>指的就是当前对象，也就是我们传入的<code>Data</code>对象，所以最终<code>{{.Count}}</code>会被替换成10，这也是最基础的用法。</p>
+<h2 id=空白去除>空白去除</h2>
+<p>假设有以下模板</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>&#34;{{23 -}} &lt; {{- 45}}&#34;
+</code></pre></div><p>最终的结果是</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>&#34;23&lt;45&#34;
+</code></pre></div><p><code>-}}</code>与<code>{{-</code>是template规定的一种语法，<code>-}}</code>表示去除后面的空格，反之同理。去除空白是一个很实用的功能，后面我将利用他去除多余的空行。
+如果没有这个功能，我们的模板文件将会变得很拥挤，难以维护。所以，要多利用去除空白，让我们的模板变得更清晰。</p>
+<h2 id=常用的action>常用的Action</h2>
+<p>介绍两个比较常用的，一个是条件判断</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>{{if pipeline}} T1 {{else if pipeline}} T0 {{end}}
+</code></pre></div><p>另一个是遍历，这里要注意的是作用域的问题，range里面的作用域<code>{{.}}</code>实际上是你遍历的对象，而不再是顶层的渲染对象。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>{{range pipeline}} T1 {{end}}
+</code></pre></div><p>这两个都比较简单，后面会使用到。</p>
+<h2 id=变量>变量</h2>
+<p>我们还可以在模板定义我们的变量</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>$variable := pipeline
+$variable = pipeline
+range $index, $element := pipeline
+</code></pre></div><h2 id=函数>函数</h2>
+<p>template有内置函数供我们使用，以下摘自go官方文档</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>and
+	Returns the boolean AND of its arguments by returning the
+	first empty argument or the last argument. That is,
+	&#34;and x y&#34; behaves as &#34;if x then y else x.&#34;
+	Evaluation proceeds through the arguments left to right
+	and returns when the result is determined.
+call
+	Returns the result of calling the first argument, which
+	must be a function, with the remaining arguments as parameters.
+	Thus &#34;call .X.Y 1 2&#34; is, in Go notation, dot.X.Y(1, 2) where
+	Y is a func-valued field, map entry, or the like.
+	The first argument must be the result of an evaluation
+	that yields a value of function type (as distinct from
+	a predefined function such as print). The function must
+	return either one or two result values, the second of which
+	is of type error. If the arguments don&#39;t match the function
+	or the returned error value is non-nil, execution stops.
+html
+	Returns the escaped HTML equivalent of the textual
+	representation of its arguments. This function is unavailable
+	in html/template, with a few exceptions.
+index
+	Returns the result of indexing its first argument by the
+	following arguments. Thus &#34;index x 1 2 3&#34; is, in Go syntax,
+	x[1][2][3]. Each indexed item must be a map, slice, or array.
+slice
+	slice returns the result of slicing its first argument by the
+	remaining arguments. Thus &#34;slice x 1 2&#34; is, in Go syntax, x[1:2],
+	while &#34;slice x&#34; is x[:], &#34;slice x 1&#34; is x[1:], and &#34;slice x 1 2 3&#34;
+	is x[1:2:3]. The first argument must be a string, slice, or array.
+js
+	Returns the escaped JavaScript equivalent of the textual
+	representation of its arguments.
+len
+	Returns the integer length of its argument.
+not
+	Returns the boolean negation of its single argument.
+or
+	Returns the boolean OR of its arguments by returning the
+	first non-empty argument or the last argument, that is,
+	&#34;or x y&#34; behaves as &#34;if x then x else y&#34;.
+	Evaluation proceeds through the arguments left to right
+	and returns when the result is determined.
+print
+	An alias for fmt.Sprint
+printf
+	An alias for fmt.Sprintf
+println
+	An alias for fmt.Sprintln
+urlquery
+	Returns the escaped value of the textual representation of
+	its arguments in a form suitable for embedding in a URL query.
+	This function is unavailable in html/template, with a few
+	exceptions.
+</code></pre></div><p>不仅如此，还支持我们自定义函数，这个下面将会讲到，有了自定义函数，模板渲染也将变得更加灵活。</p>
+<h2 id=模板定义>模板定义</h2>
+<p>我们还可以定义我们的模板（定义不会输出）</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>{{define &#34;T1&#34;}}ONE{{end}}
+</code></pre></div><p>使用定义的模板（输出模板T1定义的内容）</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>{{template &#34;T1&#34;}}
+</code></pre></div><p>了解了template的基本语法后，就可以开发了。</p>
+<h1 id=静态文件>静态文件</h1>
+<p>我把生成的文件分成静态和动态，静态是指不依赖数据表，文件内容始终一样的，只有包名是不确定，需要我们传入。
+静态有<code>dao.go</code>以及<code>transaction.go</code>文件，先把渲染函数实现。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>render</span>(<span style=color:#a6e22e>tmpl</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>wr</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>Writer</span>, <span style=color:#a6e22e>data</span> <span style=color:#66d9ef>interface</span>{}) <span style=color:#66d9ef>error</span> {
+    <span style=color:#a6e22e>t</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>template</span>.<span style=color:#a6e22e>New</span>(<span style=color:#a6e22e>tmpl</span>).<span style=color:#a6e22e>Parse</span>(<span style=color:#a6e22e>tmpl</span>)
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+    }
+    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Execute</span>(<span style=color:#a6e22e>wr</span>, <span style=color:#a6e22e>data</span>)
+}
+</code></pre></div><p>而我们的模板只有一处是变化的，就是包名<code>package {{.}}</code>，我们直接用<code>{{.}}</code>，所以渲染的调用方式类似下面这样</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>packageName</span> <span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>buf</span> <span style=color:#a6e22e>bytes</span>.<span style=color:#a6e22e>Buffer</span>
+<span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>render</span>(<span style=color:#a6e22e>tmpl</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>buf</span>, <span style=color:#a6e22e>packageName</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span>{
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+}
+</code></pre></div><h1 id=动态文件>动态文件</h1>
+<p>动态文件在这里只有curd代码，表对应的结构体代码已经交给AST生成，这里就不再说了，只讲template部分。
+由于curd代码比较复杂，所以我们需要用到自定义函数，自定义函数是这样使用的</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#a6e22e>funcMap</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>template</span>.<span style=color:#a6e22e>FuncMap</span>{
+    <span style=color:#e6db74>&#34;caseExport&#34;</span>:      <span style=color:#a6e22e>camelCaseExport</span>,
+    <span style=color:#e6db74>&#34;caseInternal&#34;</span>:    <span style=color:#a6e22e>camelCaseInternal</span>,
+}
+<span style=color:#a6e22e>t</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>template</span>.<span style=color:#a6e22e>New</span>(<span style=color:#a6e22e>tmpl</span>).<span style=color:#a6e22e>Funcs</span>(<span style=color:#a6e22e>funcMap</span>).<span style=color:#a6e22e>Parse</span>(<span style=color:#a6e22e>tmpl</span>)
+<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+}
+<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Execute</span>(<span style=color:#a6e22e>wr</span>, <span style=color:#a6e22e>data</span>)
+</code></pre></div><p><code>camelCaseExport</code>，<code>camelCaseInternal</code>是我自定义的函数，功能是把变量转化成驼峰命名，一个是可导出的命名（首字母大写），一个是内部的命名（首字母小写）。
+在模板文件中，可以直接调用自定义函数</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback>{{- $tableExport := caseExport .Table -}}
+{{- $tableInternal := caseInternal .Table -}}
+</code></pre></div><p>这里定义了两个变量，分别是表名的导出命名和内部命名，后续直接引用变量就行。在编写模板文件时，难点在于需要生成主键，以及唯一键的curd代码。
+我们可以先定义好渲染的变量</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Column</span> <span style=color:#66d9ef>struct</span> {
+	<span style=color:#a6e22e>Name</span>      <span style=color:#66d9ef>string</span>
+	<span style=color:#a6e22e>Type</span>      <span style=color:#66d9ef>string</span>
+	<span style=color:#a6e22e>IsNotNull</span> <span style=color:#66d9ef>bool</span>
+}
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>QueryData</span> <span style=color:#66d9ef>struct</span> {
+	<span style=color:#a6e22e>Package</span>    <span style=color:#66d9ef>string</span>
+	<span style=color:#a6e22e>Table</span>      <span style=color:#66d9ef>string</span>
+	<span style=color:#a6e22e>Columns</span>    []<span style=color:#a6e22e>Column</span>
+	<span style=color:#a6e22e>PrimaryKey</span> []<span style=color:#a6e22e>Column</span>
+	<span style=color:#a6e22e>UniqueKeys</span> [][]<span style=color:#a6e22e>Column</span>
+	<span style=color:#a6e22e>ImportSqlx</span> <span style=color:#66d9ef>bool</span>
+}
+</code></pre></div><p>以唯一键为例，我们需要遍历，表中定义的唯一键</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-bash data-lang=bash>// keyFunSign表示遍历传入的唯一键，并将其变成导出命名，比如我们有一组唯一键（<span style=color:#e6db74>`</span>id<span style=color:#e6db74>`</span>, <span style=color:#e6db74>`</span>count<span style=color:#e6db74>`</span>），那么将会变成：IdCount
+<span style=color:#f92672>{{</span>- define <span style=color:#e6db74>&#34;keyFunSign&#34;</span> -<span style=color:#f92672>}}</span> 
+<span style=color:#f92672>{{</span>range .<span style=color:#f92672>}}{{</span>caseExport .Name<span style=color:#f92672>}}{{</span>end<span style=color:#f92672>}}</span> 
+<span style=color:#f92672>{{</span>- end -<span style=color:#f92672>}}</span>
+
+// keyParams表示遍历传入的唯一键，比如我们有一组唯一键（<span style=color:#e6db74>`</span>id<span style=color:#e6db74>`</span>, <span style=color:#e6db74>`</span>count<span style=color:#e6db74>`</span>），将会生成：, id int64, count int64
+<span style=color:#f92672>{{</span>- define <span style=color:#e6db74>&#34;keyParams&#34;</span> -<span style=color:#f92672>}}</span>
+<span style=color:#f92672>{{</span>range .<span style=color:#f92672>}}</span>, <span style=color:#f92672>{{</span>caseInternal .Name<span style=color:#f92672>}}</span> <span style=color:#f92672>{{</span>.Type<span style=color:#f92672>}}{{</span>end<span style=color:#f92672>}}</span>
+<span style=color:#f92672>{{</span>- end -<span style=color:#f92672>}}</span>
+
+<span style=color:#f92672>{{</span>- range .UniqueKeys<span style=color:#f92672>}}</span>
+	FindBy<span style=color:#f92672>{{</span>template <span style=color:#e6db74>&#34;keyFunSign&#34;</span> .<span style=color:#f92672>}}(</span>ctx context.Context<span style=color:#f92672>{{</span>template <span style=color:#e6db74>&#34;keyParams&#34;</span> .<span style=color:#f92672>}})</span> <span style=color:#f92672>(</span>*<span style=color:#f92672>{{</span>$tableExport<span style=color:#f92672>}}</span>, error<span style=color:#f92672>)</span>
+	UpdateBy<span style=color:#f92672>{{</span>template <span style=color:#e6db74>&#34;keyFunSign&#34;</span> .<span style=color:#f92672>}}(</span>ctx context.Context, <span style=color:#f92672>{{</span>$tableInternal<span style=color:#f92672>}}</span> *<span style=color:#f92672>{{</span>$tableExport<span style=color:#f92672>}})</span> error
+	DeleteBy<span style=color:#f92672>{{</span>template <span style=color:#e6db74>&#34;keyFunSign&#34;</span> .<span style=color:#f92672>}}(</span>ctx context.Context<span style=color:#f92672>{{</span>template <span style=color:#e6db74>&#34;keyParams&#34;</span> .<span style=color:#f92672>}})</span> error
+<span style=color:#f92672>{{</span>- end<span style=color:#f92672>}}</span>
+</code></pre></div><p>其他的过程都大同小异，只不过生成sqlx代码会复杂点，因为存在null特殊结构，而且还需要拼接sql，不过也差不多，花点时间加上自定义函数的帮助也能够实现，这里就不再展开描述。</p>
+<h1 id=小结>小结</h1>
+<p>在这节过后，我们已经完成了90%的工作，所以的模块，功能已经实现。剩下的任务就是将这些模块拼接，集成使用，由于模块比较分散，组装也不是件容易的事，这个我会在下一篇文章讲到。<br>
+项目源码：https://github.com/lemon-1997/sqlboy</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/go>
+go
+</a>
+<a href=/tags/generate>
+generate
+</a>
+<a href=/tags/sqlboy>
+sqlboy
+</a>
+<a href=/tags/template>
+template
+</a>
+</div>
+<div class=addthis_inline_share_toolbox style=text-align:center></div>
+<hr>
+<div class=post-nav>
+<div class="post-nav-next post-nav-item">
+</div>
+<div class="post-nav-prev post-nav-item">
+<a href=/post/project-sqlboy-3.html rel=prev title=go自动化生成数据库curd代码（三）：ANTLR解析SQL>
+go自动化生成数据库curd代码（三）：ANTLR解析SQL
+<i class="fa fa-chevron-right"></i>
+</a>
+</div>
+</div>
+</footer>
+</article>
+</div>
+<div id=comments class=post-comments>
+<div class=comment-head>
+<div class=comment-headline>
+<i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span>
+</div>
+<div class=comment-switch>
+<span class=first-comment>Utterances</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span>
+</div>
+</div>
+<div class=comment-wrap>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=utterances-container></div>
+</div>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=waline-container></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class=footer>
+<div class=footer-inner>
+<div id=gtranslate class=google-translate>
+<i class="fa fa-language"></i>
+<div id=google_translate_element></div>
+</div>
+<div class=copyright>
+&copy;
+<span itemprop=copyrightYear>
+2022
+</span>
+<span class=with-love>
+<i class="fa fa-lemon"></i>
+</span>
+<span class=author itemprop=copyrightHolder>lemon</span>
+</div>
+</div>
+</footer>
+<script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
+<script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":false},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"utterances":{"cfg":{"issueterm":"pathname","label":"comments","repo":"lemon-1997/lemon-1997.github.io","theme":"preferred-color-scheme"},"js":"https://utteranc.es/client.js"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","sofa":"快来发表你的意见吧","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script>
+<script type=text/javascript src=/js/main.min.63932a6e8faa0bb69dd7b4369aa7e5a1e84c66c5561c6a2ea11eb365a2ea549e.js defer></script>
+</body>
+</html>
