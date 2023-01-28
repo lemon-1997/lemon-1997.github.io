@@ -8,18 +8,18 @@
 <link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
 <link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
-<meta itemprop=name content="随想记录">
+<meta itemprop=name content>
 <meta itemprop=description content="simple is better">
 <meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
 <meta itemprop=keywords content="lemon,go,后端,微服务">
 <meta property="og:type" content="website">
-<meta property="og:title" content="随想记录">
+<meta property="og:title" content="lemon blog">
 <meta property="og:description" content="simple is better">
 <meta property="og:image" content="/imgs/lemon.jpg">
 <meta property="og:image:width" content="312">
 <meta property="og:image:height" content="312">
 <meta property="og:image:type" content="image/jpeg/png/svg/jpg">
-<meta property="og:url" content="https://lemon-1997.github.io/categories/%E9%9A%8F%E6%83%B3%E8%AE%B0%E5%BD%95/">
+<meta property="og:url" content="https://lemon-1997.github.io/archives/">
 <meta property="og:site_name" content="lemon blog">
 <meta property="og:locale" content="zh-CN">
 <link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css>
@@ -28,9 +28,9 @@
 <link rel=stylesheet href=/css/main.min.efa32aea2ef196e07d21feb2e63b9bdc157ad7c6cdcd98f7d548d0360296aab8.css>
 <style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
 <script type=text/javascript>(function(){localDB={set:function(b,c,a){if(a===0)return;const d=new Date,e=a*864e5,f={value:c,expiry:d.getTime()+e};localStorage.setItem(b,JSON.stringify(f))},get:function(a){const b=localStorage.getItem(a);if(!b)return void 0;const c=JSON.parse(b),d=new Date;return d.getTime()>c.expiry?(localStorage.removeItem(a),void 0):c.value}},theme={active:function(){const a=localDB.get('theme');if(a==void 0)return;theme.toggle(a),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(a){theme.toggle(a.matches?'dark':'light')})},toggle:function(a){document.documentElement.setAttribute('data-theme',a),localDB.set('theme',a,2);const b=document.querySelector('iframe.giscus-frame');if(b){const c={setConfig:{theme:a}};b.contentWindow.postMessage({giscus:c},'https://giscus.app')}}},theme.active()})(window)</script>
-<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":false,"path":"%E9%9A%8F%E6%83%B3%E8%AE%B0%E5%BD%95","permalink":"https://lemon-1997.github.io/categories/%E9%9A%8F%E6%83%B3%E8%AE%B0%E5%BD%95/","title":"随想记录","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":false,"path":"archives","permalink":"https://lemon-1997.github.io/archives/","title":"","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
 <script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",a.async=!1,a.defer=!0,document.head.appendChild(a),a.onload=function(){NexT.utils.fmtBusuanzi()}})</script>
-<title>随想记录 - 分类 - lemon blog</title>
+<title>所有 文章 - lemon blog</title>
 <noscript>
 <link rel=stylesheet href=/css/noscript.css>
 </noscript>
@@ -73,7 +73,7 @@
 </a>
 </li>
 <li class="menu-item menu-item-archives">
-<a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<a href=/archives/ class="hvr-icon-pulse menu-item-active" rel=section><i class="fa fa-archive hvr-icon"></i>归档
 <span class=badge>11</span>
 </a>
 </li>
@@ -121,7 +121,7 @@
 </ul>
 <div class=sidebar-panel-container>
 <div class="post-toc-wrap sidebar-panel">
-<div class="post-toc animated"></div>
+<div class="post-toc animated"><nav id=TableOfContents></nav></div>
 </div>
 <div class="site-overview-wrap sidebar-panel">
 <div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person>
@@ -225,15 +225,11 @@
 <noscript>
 <div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
 </noscript>
-<div class="main-inner categories posts-collapse">
+<div class="main-inner archive posts-collapse">
 <div class=post-block>
 <div class=post-content>
 <div class=collection-title>
-<span class=collection-header>
-<h2>
-随想记录
-<small>分类</small>
-</h2>
+<span class=collection-header>嗯..，目前共计 <strong>11</strong> 篇日志，继续努力哟。╰(*°▽°*)╯
 </span>
 </div>
 <div class=collection-year>
@@ -242,13 +238,13 @@
 <article itemscope itemtype=http://schema.org/Article>
 <header class=post-header>
 <div class=post-meta-container>
-<time itemprop=dateCreated datetime=2022-08-15T21:58:49+08:00 content="08-15">
+<time itemprop=dateCreated datetime=2022-08-15T21:47:46+08:00 content="08-15">
 08-15
 </time>
 </div>
 <div class=post-title>
-<a class=post-title-link href=/post/other-develop.html itemprop=url>
-<span itemprop=name>后端开发必备的工具及网站</span>
+<a class=post-title-link href=/post/source-context.html itemprop=url>
+<span itemprop=name>go上下文Context包源码分析</span>
 </a>
 </div>
 </header>
@@ -256,7 +252,11 @@
 </div>
 </div>
 <nav class=pagination>
-<span class="page-number current">1</span>
+<a class="extend prev" rel=prev href=/archives/>
+<i class="fa fa-angle-left"></i>
+</a>
+<a class=page-number href=/archives/>1</a>
+<span class="page-number current">2</span>
 </nav>
 </div>
 </main>
