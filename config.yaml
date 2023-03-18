@@ -701,7 +701,7 @@ params:
   # 微软 Bing 站验证
   # Bing Webmaster tools verification.
   # See: https://www.bing.com/webmasters
-  bingSiteVerification: 37EC8FD586311559FF6AEA11F04C324D
+  bingSiteVerification: 3043D1C99FE5A3EB5DB6C47B92C08392
 
   # Yandex 站点验证
   # Yandex Webmaster tools verification.
