@@ -3,8 +3,8 @@ title: "Google分布式框架Weaver（三）：测试与可观测性"
 description: "介绍weaver的测试与可观测性，如何使用官方API"
 keywords: "weaver,微服务,测试,可观测"
 
-date: 2023-03-21T19:22:54+08:00
-lastmod: 2023-03-21T19:22:54+08:00
+publishDate: 2023-03-21T20:00:00+08:00
+lastmod: 2023-03-21T20:00:00+08:00
 
 categories:
 - 框架教程
