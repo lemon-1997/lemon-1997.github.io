@@ -3,7 +3,7 @@ title: "Google分布式框架Weaver（四）：多进程部署原理"
 description: "使用weaver多进程部署时，服务如何注册，提供服务"
 keywords: "weaver,微服务,部署"
 
-date: 2023-03-30T19:15:36+08:00
+publishDate: 2023-03-30T19:15:36+08:00
 lastmod: 2023-03-30T19:15:36+08:00
 
 categories:
