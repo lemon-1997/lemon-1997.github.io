@@ -74,7 +74,7 @@
 </li>
 <li class="menu-item menu-item-archives">
 <a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
-<span class=badge>15</span>
+<span class=badge>16</span>
 </a>
 </li>
 <li class="menu-item menu-item-search">
@@ -133,7 +133,7 @@
 <nav class=site-state>
 <div class="site-state-item site-state-posts">
 <a href=/archives/>
-<span class=site-state-item-count>15</span>
+<span class=site-state-item-count>16</span>
 <span class=site-state-item-name>日志</span>
 </a>
 </div>
@@ -145,7 +145,7 @@
 </div>
 <div class="site-state-item site-state-tags">
 <a href=/tags/>
-<span class=site-state-item-count>16</span>
+<span class=site-state-item-count>17</span>
 <span class=site-state-item-name>标签</span>
 </a>
 </div>
@@ -190,15 +190,15 @@
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-font"></i>总字数：</div>
-<div class=item-count id=wordsCount data-count=29251></div>
+<div class=item-count id=wordsCount data-count=30501></div>
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div>
-<div class=item-count id=readTimes data-times=69></div>
+<div class=item-count id=readTimes data-times=72></div>
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div>
-<div class=item-count id=last-push-date data-lastpushdate=2023-04-20T18:41:58+08:00></div>
+<div class=item-count id=last-push-date data-lastpushdate=2023-11-25T23:30:00+08:00></div>
 </div>
 </div>
 </div>
@@ -226,6 +226,84 @@
 <div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
 </noscript>
 <div class="main-inner index posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-grpc.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="动态gRPC-HTTP代理（一）：设计">
+<meta itemprop=description content="调研gRPC-HTTP代理，设计自己的代理插件">
+</span>
+<header class=post-header>
+<h2 class=post-title itemprop="name headline">
+<a href=/post/project-grpc.html itemprop=url class=post-title-link>动态gRPC-HTTP代理（一）：设计</a> </h2>
+<div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2023-11-25 23:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2023-11-25 23:30:00 +0800 +0800">2023-11-25</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
+<span itemprop=name>项目实战</span>
+</a>
+</span>
+</span>
+<div class=post-meta-items>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/project-grpc.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+<span class=post-meta-item title=评论>
+<span class=post-meta-item-icon>
+<i class="far fa-comments"></i>
+</span>
+<span class=post-meta-item-text>
+评论：
+</span>
+<span class=waline-comment-count data-path=/post/project-grpc.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+</div>
+</div>
+</div>
+</header>
+<div class="post-body autonumber" itemprop=articleBody>
+<p>在当前主流的微服务架构中，许多公司选择使用gRPC协议作为内部通信机制。然而，在与外部系统进行交互时，HTTP仍然是不可或缺的协议。为了解决这一问题，常见的解决方案是采用grpc-gateway或其他网关自带的插件进行协议转换。但是，这些方案都存在一个共同的痛点：每次更新服务都需要手动更新proto或pb文件，并重新配置网关，这给开发者带来了不小的麻烦。因此，我们迫切需要一个不依赖于proto文件、能够动态感知gRPC服务的插件，以简化这一流程并提高开发效率。本文将探讨这一问题的背景、现有解决方案的局限性，以及我们所期望的理想插件应具备的特性。</p>
+</div>
+<footer class=post-footer>
+<div class=post-button>
+<a class=btn href=/post/project-grpc.html#more rel=contents>
+阅读全文 &#187;
+</a>
+</div>
+<div class=post-eof></div>
+</footer>
+</article>
+</div>
 <div class=post-block>
 <article itemscope itemtype=http://schema.org/Article class=post-content lang>
 <link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/frame-weaver-5.html>
@@ -931,85 +1009,6 @@ weaver支持开发者去实现部署，可以利用它去实现指定副本的�
 <footer class=post-footer>
 <div class=post-button>
 <a class=btn href=/post/project-sqlboy-4.html#more rel=contents>
-阅读全文 &#187;
-</a>
-</div>
-<div class=post-eof></div>
-</footer>
-</article>
-</div>
-<div class=post-block>
-<article itemscope itemtype=http://schema.org/Article class=post-content lang>
-<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-sqlboy-3.html>
-<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
-<meta itemprop=image content="/imgs/lemon.jpg">
-<meta itemprop=name content="lemon">
-</span>
-<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
-<meta itemprop=name content="lemon">
-<meta itemprop=description content="simple is better">
-</span>
-<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
-<meta itemprop=name content="go自动化生成数据库curd代码（三）：ANTLR解析SQL">
-<meta itemprop=description content="ANTLR对mysql建表语句语法分析">
-</span>
-<header class=post-header>
-<h2 class=post-title itemprop="name headline">
-<a href=/post/project-sqlboy-3.html itemprop=url class=post-title-link>go自动化生成数据库curd代码（三）：ANTLR解析SQL</a> </h2>
-<div class=post-meta-container>
-<div class=post-meta-items>
-<span class=post-meta-item>
-<span class=post-meta-item-icon>
-<i class="far fa-calendar"></i>
-</span>
-<span class=post-meta-item-text>发表于：</span>
-<time title="发表于：2022-12-28 20:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2022-12-28 20:30:00 +0800 +0800">2022-12-28</time>
-</span>
-<span class=post-meta-item>
-<span class=post-meta-item-icon>
-<i class="far fa-folder-open"></i>
-</span>
-<span class=post-meta-item-text>分类于：</span>
-<span itemprop=about itemscope itemtype=http://schema.org/Thing>
-<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
-<span itemprop=name>项目实战</span>
-</a>
-</span>
-</span>
-<div class=post-meta-items>
-<span class=post-meta-item title=浏览>
-<span class=post-meta-item-icon>
-<i class="far fa-eye"></i>
-</span>
-<span class=post-meta-item-text>
-浏览：
-</span>
-<span class=waline-pageview-count data-path=/post/project-sqlboy-3.html>
-<i class="fa fa-sync fa-spin"></i>
-</span>
-</span>
-<span class=post-meta-item title=评论>
-<span class=post-meta-item-icon>
-<i class="far fa-comments"></i>
-</span>
-<span class=post-meta-item-text>
-评论：
-</span>
-<span class=waline-comment-count data-path=/post/project-sqlboy-3.html>
-<i class="fa fa-sync fa-spin"></i>
-</span>
-</span>
-</div>
-</div>
-</div>
-</header>
-<div class="post-body autonumber" itemprop=articleBody>
-<p>在上一节我们了解了go的抽象语法树AST，并利用go提供的AST包拿到了用户定义的sql。接下来就是如何解析sql，将sql语句中的表名，列字段的名称，类型等关键信息提取出来。
-这就需要我们的语法分析了，在本项目中我们决定采用ANTLR来完成此任务，他是一个强大的工具，下文我将为大家介绍是如何实现的。</p>
-</div>
-<footer class=post-footer>
-<div class=post-button>
-<a class=btn href=/post/project-sqlboy-3.html#more rel=contents>
 阅读全文 &#187;
 </a>
 </div>
