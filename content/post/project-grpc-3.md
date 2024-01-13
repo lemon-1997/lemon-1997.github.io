@@ -149,6 +149,6 @@ func (r *httpRouter) Match(method, path string) (map[string]string, interface{},
 
 在本篇博客中，我们深入探讨了项目中路由模块的关键作用，以及如何将HTTP请求精准导向gRPC服务。
 我们的路由模块很简单，我们也不会考虑gRPC服务proto的更新等等，我们要做的是一个基础模块，考虑太多只会让代码更加耦合，路由只需要做好简单的注册和匹配功能就好了，剩下由其他模块再去封装。
-下一篇博客我们讲继续完成下一个模块，是编接码模块，它将完成HTTP和gRPC的相互转换。
+下一篇博客我们将继续完成下一个模块，是编接码模块，它将完成HTTP和gRPC的相互转换。
 
 项目源码 https://github.com/lemon-1997/dynamic-grpc
