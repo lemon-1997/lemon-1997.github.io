@@ -464,6 +464,7 @@ params:
   # 开启文章头部元素显示
   # Post meta display settings
   postMeta:
+    # 是否开启各元素的文字显示
     itemText: true
     created: true
     updated:
@@ -472,6 +473,18 @@ params:
     categories: true
     wordCount: true
     readTime: true
+    # 是否开启评论数显示
+    comments:
+      enable: true
+      # 评论统计插件，暂只支持waline
+      # Comment counter plugin, only support waline
+      plugin: waline
+    # 是否开启页面访问数显示
+    views:
+      enable: true
+      # 页面访问统计插件，支持busuanzi, waline, leancloud
+      # Page views counter plugin, support: busuanzi, waline, leancloud
+      plugin: busuanzi
 
   # 文章底部的设置
   # Post footer settings
@@ -948,6 +961,9 @@ params:
     indexName: #<algolia index name>
     hits:
       perPage: 10
+    # 索引生成内容长度字数限制
+    # Index generation content length word count limit.
+    limit: 1000
 
   # 本地搜索
   # Local Search
@@ -971,6 +987,9 @@ params:
     # 页面加载时是否要重新载入索引文件
     # Preload the search data when the page loads.
     preload: false
+    # 索引生成内容长度字数限制
+    # Index generation content length word count limit.
+    limit: 1000
 
 
   # ---------------------------------------------------------------
