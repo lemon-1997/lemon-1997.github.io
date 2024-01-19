@@ -74,7 +74,7 @@
 </li>
 <li class="menu-item menu-item-archives">
 <a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
-<span class=badge>19</span>
+<span class=badge>20</span>
 </a>
 </li>
 <li class="menu-item menu-item-search">
@@ -133,7 +133,7 @@
 <nav class=site-state>
 <div class="site-state-item site-state-posts">
 <a href=/archives/>
-<span class=site-state-item-count>19</span>
+<span class=site-state-item-count>20</span>
 <span class=site-state-item-name>日志</span>
 </a>
 </div>
@@ -190,15 +190,15 @@
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-font"></i>总字数：</div>
-<div class=item-count id=wordsCount data-count=34528></div>
+<div class=item-count id=wordsCount data-count=36231></div>
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div>
-<div class=item-count id=readTimes data-times=81></div>
+<div class=item-count id=readTimes data-times=85></div>
 </div>
 <div class=siteinfo-item>
 <div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div>
-<div class=item-count id=last-push-date data-lastpushdate=2024-01-13T13:15:19+08:00></div>
+<div class=item-count id=last-push-date data-lastpushdate=2024-01-19T15:50:20+08:00></div>
 </div>
 </div>
 </div>
@@ -226,6 +226,84 @@
 <div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
 </noscript>
 <div class="main-inner index posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-grpc-5.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="动态gRPC-HTTP代理（五）：代理">
+<meta itemprop=description content="http代理gRPC服务">
+</span>
+<header class=post-header>
+<h2 class=post-title itemprop="name headline">
+<a href=/post/project-grpc-5.html itemprop=url class=post-title-link>动态gRPC-HTTP代理（五）：代理</a> </h2>
+<div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2024-01-19 15:50:20 +0800 +0800" itemprop="dateCreated datePublished" datetime="2024-01-19 15:50:20 +0800 +0800">2024-01-19</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
+<span itemprop=name>项目实战</span>
+</a>
+</span>
+</span>
+<div class=post-meta-items>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/project-grpc-5.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+<span class=post-meta-item title=评论>
+<span class=post-meta-item-icon>
+<i class="far fa-comments"></i>
+</span>
+<span class=post-meta-item-text>
+评论：
+</span>
+<span class=waline-comment-count data-path=/post/project-grpc-5.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+</div>
+</div>
+</div>
+</header>
+<div class="post-body autonumber" itemprop=articleBody>
+<p>代理模块作为最外层的关键组件，统一处理外部HTTP请求、调用底层模块进行gRPC转换，并返回HTTP响应。本文将详细介绍代理模块的设计理念、核心功能和实现细节，以构建一个高效、稳定、可扩展的代理服务。</p>
+</div>
+<footer class=post-footer>
+<div class=post-button>
+<a class=btn href=/post/project-grpc-5.html#more rel=contents>
+阅读全文 &#187;
+</a>
+</div>
+<div class=post-eof></div>
+</footer>
+</article>
+</div>
 <div class=post-block>
 <article itemscope itemtype=http://schema.org/Article class=post-content lang>
 <link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-grpc-4.html>
@@ -292,7 +370,7 @@
 </div>
 </header>
 <div class="post-body autonumber" itemprop=articleBody>
-<p>在构建将HTTP请求代理并转换为gRPC调用后端服务的系统中，编解码模块起到了至关重要的作用。它承担着将HTTP请求和响应与gRPC消息格式之间进行转换的任务，确保了请求能够顺利地传递到目标服务并返回结果。本文将详细介绍编解码模块的设计与实现，以及如何处理转换过程中的各种细节和挑战。</p>
+<p>编解码模块是系统的关键模块，起到了至关重要的作用。它承担着将HTTP请求和响应与gRPC消息格式之间进行转换的任务，确保了请求能够顺利地传递到目标服务并返回结果。本文将详细介绍编解码模块的设计与实现，以及如何处理转换过程中的各种细节和挑战。</p>
 </div>
 <footer class=post-footer>
 <div class=post-button>
@@ -936,84 +1014,6 @@ weaver支持开发者去实现部署，可以利用它去实现指定副本的�
 </footer>
 </article>
 </div>
-<div class=post-block>
-<article itemscope itemtype=http://schema.org/Article class=post-content lang>
-<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/source-singleFlight.html>
-<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
-<meta itemprop=image content="/imgs/lemon.jpg">
-<meta itemprop=name content="lemon">
-</span>
-<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
-<meta itemprop=name content="lemon">
-<meta itemprop=description content="simple is better">
-</span>
-<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
-<meta itemprop=name content="解决重复请求和缓存击穿，go神器SingleFlight深度解析">
-<meta itemprop=description content="分析go包SingleFlight的实现">
-</span>
-<header class=post-header>
-<h2 class=post-title itemprop="name headline">
-<a href=/post/source-singleFlight.html itemprop=url class=post-title-link>解决重复请求和缓存击穿，go神器SingleFlight深度解析</a> </h2>
-<div class=post-meta-container>
-<div class=post-meta-items>
-<span class=post-meta-item>
-<span class=post-meta-item-icon>
-<i class="far fa-calendar"></i>
-</span>
-<span class=post-meta-item-text>发表于：</span>
-<time title="发表于：2023-03-01 22:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2023-03-01 22:30:00 +0800 +0800">2023-03-01</time>
-</span>
-<span class=post-meta-item>
-<span class=post-meta-item-icon>
-<i class="far fa-folder-open"></i>
-</span>
-<span class=post-meta-item-text>分类于：</span>
-<span itemprop=about itemscope itemtype=http://schema.org/Thing>
-<a href=/categories/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90 itemprop=url rel=index>
-<span itemprop=name>源码分析</span>
-</a>
-</span>
-</span>
-<div class=post-meta-items>
-<span class=post-meta-item title=浏览>
-<span class=post-meta-item-icon>
-<i class="far fa-eye"></i>
-</span>
-<span class=post-meta-item-text>
-浏览：
-</span>
-<span class=waline-pageview-count data-path=/post/source-singleFlight.html>
-<i class="fa fa-sync fa-spin"></i>
-</span>
-</span>
-<span class=post-meta-item title=评论>
-<span class=post-meta-item-icon>
-<i class="far fa-comments"></i>
-</span>
-<span class=post-meta-item-text>
-评论：
-</span>
-<span class=waline-comment-count data-path=/post/source-singleFlight.html>
-<i class="fa fa-sync fa-spin"></i>
-</span>
-</span>
-</div>
-</div>
-</div>
-</header>
-<div class="post-body autonumber" itemprop=articleBody>
-<p>当应用程序面临高并发请求时，重复请求往往是一种常见的问题。针对这一问题，Go 语言中提供了 SingleFlight 库，它可以有效地解决并发请求中的重复请求问题，提升应用程序的性能和稳定性。在本文中，我们将介绍 SingleFlight 库的作用和价值，并详细讲解如何在 Go 语言中使用 SingleFlight 库来解决并发请求中的重复请求问题。同时，我们将探讨 SingleFlight 库的原理和实现，以及其在实际项目中的应用场景和注意事项。</p>
-</div>
-<footer class=post-footer>
-<div class=post-button>
-<a class=btn href=/post/source-singleFlight.html#more rel=contents>
-阅读全文 &#187;
-</a>
-</div>
-<div class=post-eof></div>
-</footer>
-</article>
-</div>
 <nav class=pagination>
 <span class="page-number current">1</span>
 <a class=page-number href=/post/page/2/>2</a>
@@ -1043,7 +1043,7 @@ weaver支持开发者去实现部署，可以利用它去实现指定副本的�
 </footer>
 <script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
 <script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
-<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":false},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"utterances":{"cfg":{"issueterm":"pathname","label":"comments","repo":"lemon-1997/lemon-1997.github.io","theme":"preferred-color-scheme"},"js":"https://utteranc.es/client.js"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","sofa":"快来发表你的意见吧","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":false},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"utterances":{"cfg":{"issueterm":"pathname","label":"comments","repo":"lemon-1997/lemon-1997.github.io","theme":"preferred-color-scheme"},"js":"https://utteranc.es/client.js"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","sofa":"快来发表你的意见吧","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script>
 <script type=text/javascript src=/js/main.min.63932a6e8faa0bb69dd7b4369aa7e5a1e84c66c5561c6a2ea11eb365a2ea549e.js defer></script>
 </body>
 </html>
