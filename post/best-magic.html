@@ -1,0 +1,467 @@
+<!doctype html><html lang=zh-cn data-theme=light>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<meta name=theme-color content="#222" media="(prefers-color-scheme: light)">
+<meta name=generator content="Hugo 0.91.2">
+<link rel="shortcut icon" type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/x-icon href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
+<link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
+<link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
+<meta itemprop=name content="Go语言的黑科技：编译劫持与隐形链接的应用">
+<meta itemprop=description content="探索Go的高级技巧">
+<meta itemprop=datePublished zgotmplz>
+<meta itemprop=dateModified zgotmplz>
+<meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
+<meta itemprop=keywords content="go,黑魔法,编译劫持,隐形链接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言的黑科技：编译劫持与隐形链接的应用">
+<meta property="og:description" content="探索Go的高级技巧">
+<meta property="og:image" content="/imgs/lemon.jpg">
+<meta property="og:image:width" content="312">
+<meta property="og:image:height" content="312">
+<meta property="og:image:type" content="image/jpeg/png/svg/jpg">
+<meta property="og:url" content="https://lemon-1997.github.io/post/best-magic.html">
+<meta property="og:site_name" content="lemon blog">
+<meta property="og:locale" content="zh-CN">
+<meta property="article:author" content="lemon">
+<meta property="article:published_time" content="2024-05-31 16:00:00 +0800 +0800">
+<meta property="article:modified_time" content="2024-05-31 16:00:00 +0800 +0800">
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css>
+<link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css>
+<link rel=stylesheet href=/css/main.min.efa32aea2ef196e07d21feb2e63b9bdc157ad7c6cdcd98f7d548d0360296aab8.css>
+<style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
+<script type=text/javascript>(function(){localDB={set:function(b,c,a){if(a===0)return;const d=new Date,e=a*864e5,f={value:c,expiry:d.getTime()+e};localStorage.setItem(b,JSON.stringify(f))},get:function(a){const b=localStorage.getItem(a);if(!b)return void 0;const c=JSON.parse(b),d=new Date;return d.getTime()>c.expiry?(localStorage.removeItem(a),void 0):c.value}},theme={active:function(){const a=localDB.get('theme');if(a==void 0)return;theme.toggle(a),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(a){theme.toggle(a.matches?'dark':'light')})},toggle:function(a){document.documentElement.setAttribute('data-theme',a),localDB.set('theme',a,2);const b=document.querySelector('iframe.giscus-frame');if(b){const c={setConfig:{theme:a}};b.contentWindow.postMessage({giscus:c},'https://giscus.app')}}},theme.active()})(window)</script>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"best-magic.html","permalink":"https://lemon-1997.github.io/post/best-magic.html","title":"Go语言的黑科技：编译劫持与隐形链接的应用","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
+<script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",a.async=!1,a.defer=!0,document.head.appendChild(a),a.onload=function(){NexT.utils.fmtBusuanzi()}})</script>
+<title>Go语言的黑科技：编译劫持与隐形链接的应用 - lemon blog</title>
+<noscript>
+<link rel=stylesheet href=/css/noscript.css>
+</noscript>
+</head>
+<body itemscope itemtype=http://schema.org/WebPage class=use-motion>
+<div class=headband></div>
+<main class=main>
+<header class=header itemscope itemtype=http://schema.org/WPHeader>
+<div class=header-inner>
+<div class=site-brand-container>
+<div class=site-nav-toggle>
+<div class=toggle aria-label=切换导航栏 role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+</div>
+<div class=site-meta>
+<a href=/ class=brand rel=start>
+<i class=logo-line></i>
+<h1 class=site-title>lemon blog</h1>
+<i class=logo-line></i>
+</a>
+<p class=site-subtitle itemprop=description>Hi there 👋</p>
+</div>
+<div class=site-nav-right>
+<div class="toggle popup-trigger">
+<i class="fa fa-search fa-fw fa-lg"></i>
+</div>
+</div>
+</div>
+<nav class=site-nav>
+<ul class="main-menu menu">
+<li class="menu-item menu-item-home">
+<a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页
+</a>
+</li>
+<li class="menu-item menu-item-about">
+<a href=/about/ class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于
+</a>
+</li>
+<li class="menu-item menu-item-archives">
+<a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>21</span>
+</a>
+</li>
+<li class="menu-item menu-item-search">
+<a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索
+</a>
+</li>
+</ul>
+</nav>
+<div class=search-pop-overlay>
+<div class="popup search-popup">
+<div class=search-header>
+<span class=search-icon>
+<i class="fa fa-search"></i>
+</span>
+<div class=search-input-container>
+<input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input>
+</div>
+<span class=popup-btn-close role=button>
+<i class="fa fa-times-circle"></i>
+</span>
+</div>
+<div class="search-result-container no-result">
+<div class=search-result-icon>
+<i class="fa fa-spinner fa-pulse fa-5x"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="toggle sidebar-toggle" role=button>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span>
+</div>
+<aside class=sidebar>
+<div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+<ul class=sidebar-nav>
+<li class=sidebar-nav-toc>
+文章目录
+</li>
+<li class=sidebar-nav-overview>
+站点概览
+</li>
+</ul>
+<div class=sidebar-panel-container>
+<div class="post-toc-wrap sidebar-panel">
+<div class="post-toc animated"><nav id=TableOfContents>
+<ul>
+<li><a href=#编译劫持>编译劫持</a>
+<ul>
+<li><a href=#工具链>工具链</a></li>
+<li><a href=#skwwalking-go>Skwwalking-Go</a>
+<ul>
+<li><a href=#简单例子>简单例子</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href=#隐形链接>隐形链接</a>
+<ul>
+<li><a href=#应用场景>应用场景</a></li>
+<li><a href=#使用方法>使用方法</a></li>
+</ul>
+</li>
+<li><a href=#总结>总结</a></li>
+</ul>
+</nav></div>
+</div>
+<div class="site-overview-wrap sidebar-panel">
+<div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person>
+<img class=site-author-image itemprop=image alt=lemon src=/imgs/img-lazy-loading.gif data-src=/imgs/lemon.jpg>
+<p class=site-author-name itemprop=name>lemon</p>
+<div class=site-description itemprop=description>simple is better</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+<nav class=site-state>
+<div class="site-state-item site-state-posts">
+<a href=/archives/>
+<span class=site-state-item-count>21</span>
+<span class=site-state-item-name>日志</span>
+</a>
+</div>
+<div class="site-state-item site-state-categories">
+<a href=/categories/>
+<span class=site-state-item-count>5</span>
+<span class=site-state-item-name>分类</span>
+</a>
+</div>
+<div class="site-state-item site-state-tags">
+<a href=/tags/>
+<span class=site-state-item-count>20</span>
+<span class=site-state-item-name>标签</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="links-of-social site-overview-item animated">
+<span class=links-of-social-item>
+<a href=https://github.com/lemon-1997 title="Github → https://github.com/lemon-1997" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fab fa-github fa-fw hvr-icon"></i>Github
+</a>
+</span>
+<span class=links-of-social-item>
+<a href=mailto:lemom_1997@126.com title="E-Mail → mailto:lemom_1997@126.com" rel=noopener class=hvr-icon-pulse target=_blank>
+<i class="fa fa-envelope fa-fw hvr-icon"></i>E-Mail
+</a>
+</span>
+</div>
+</div>
+</div>
+</div>
+<div id=siteinfo-card-widget class=sidebar-card-widget>
+<div class=item-headline>
+<i class="fas fa-chart-line"></i>
+<span>网站资讯</span>
+</div>
+<div class=siteinfo>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div>
+<div class=item-count id=runTimes data-publishdate=2022-08-15T21:58:49+08:00></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-user"></i>总访客数：
+</div>
+<div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name>
+<i class="fas fa fa-eye"></i>页面浏览：
+</div>
+<div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-font"></i>总字数：</div>
+<div class=item-count id=wordsCount data-count=38195></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div>
+<div class=item-count id=readTimes data-times=89></div>
+</div>
+<div class=siteinfo-item>
+<div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div>
+<div class=item-count id=last-push-date data-lastpushdate=2024-05-31T16:00:00+08:00></div>
+</div>
+</div>
+</div>
+</aside>
+<div class=sidebar-dimmer></div>
+</header>
+<div class=tool-buttons>
+<div id=goto-comments class="button goto-comments" title=直达评论>
+<i class="fas fa-comments"></i>
+</div>
+<div id=goto-gtranslate class=button title=多语言翻译>
+<i class="fas fa-globe"></i>
+</div>
+<div id=toggle-theme class=button title=深浅模式切换>
+<i class="fas fa-adjust"></i>
+</div>
+<div class=back-to-top role=button title=返回顶部>
+<i class="fa fa-arrow-up"></i>
+<span>0%</span>
+</div>
+</div>
+<div class=reading-progress-bar></div>
+<a role=button class="book-mark-link book-mark-link-fixed"></a>
+<noscript>
+<div class=noscript-warning>Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<div class="main-inner post posts-expand">
+<div class=post-block>
+<article itemscope itemtype=http://schema.org/Article class=post-content lang>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/best-magic.html>
+<span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
+<meta itemprop=image content="/imgs/lemon.jpg">
+<meta itemprop=name content="lemon">
+</span>
+<span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization>
+<meta itemprop=name content="lemon">
+<meta itemprop=description content="simple is better">
+</span>
+<span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
+<meta itemprop=name content="Go语言的黑科技：编译劫持与隐形链接的应用">
+<meta itemprop=description content="探索Go的高级技巧">
+</span>
+<header class=post-header>
+<h1 class=post-title itemprop="name headline">Go语言的黑科技：编译劫持与隐形链接的应用 </h1>
+<div class=post-meta-container>
+<div class=post-meta-items>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-calendar"></i>
+</span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2024-05-31 16:00:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2024-05-31 16:00:00 +0800 +0800">2024-05-31</time>
+</span>
+<span class=post-meta-item>
+<span class=post-meta-item-icon>
+<i class="far fa-folder-open"></i>
+</span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing>
+<a href=/categories/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5 itemprop=url rel=index>
+<span itemprop=name>最佳实践</span>
+</a>
+</span>
+</span>
+</div>
+<div class=post-meta-items>
+<span class=post-meta-item title=字数>
+<span class=post-meta-item-icon>
+<i class="far fa-file-word"></i>
+</span>
+<span class=post-meta-item-text>字数：</span><span>1964</span>
+</span>
+<span class=post-meta-item title=阅读>
+<span class=post-meta-item-icon>
+<i class="far fa-clock"></i>
+</span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>4分钟</span>
+</span>
+<span class=post-meta-item title=浏览>
+<span class=post-meta-item-icon>
+<i class="far fa-eye"></i>
+</span>
+<span class=post-meta-item-text>
+浏览：
+</span>
+<span class=waline-pageview-count data-path=/post/best-magic.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+<span class=post-meta-item title=评论>
+<span class=post-meta-item-icon>
+<i class="far fa-comments"></i>
+</span>
+<span class=post-meta-item-text>
+评论：
+</span>
+<span class=waline-comment-count data-path=/post/best-magic.html>
+<i class="fa fa-sync fa-spin"></i>
+</span>
+</span>
+</div>
+</div>
+</header>
+<div class="post-body autonumber" itemprop=articleBody>
+<p>在Go语言的世界里，有很多被戏称为“黑魔法”的技巧和特性，它们超越了常规的开发范畴，为开发者提供了更大的灵活性和控制力。从使用<code>unsafe</code>包进行内存操作，到利用<code>reflect</code>包进行运行时类型检查，再到使用<code>cgo</code>与C语言进行交互，这些技术都在特定情况下展现出了强大的能力。</p>
+<p>然而，在这个被熟知的黑魔法所充斥的世界中，还存在着一些鲜为人知的高级技巧，它们虽不为大多数开发者所熟知，却在某些特定场景下展现出了强大的威力。本文将带领你进入Go语言的神秘境地，探索编译劫持与隐形链接这两种高阶黑魔法的奥秘。</p>
+<h1 id=编译劫持>编译劫持</h1>
+<h2 id=工具链>工具链</h2>
+<p>在Golang中，工具链是构建、测试等阶段中的关键组成部分。其中，-toolexec标志是一个强大的功能，可在构建、测试等阶段使用。当使用此标志时，开发人员可以提供一个自定义程序或脚本来替换默认的go工具功能。这为构建、测试或分析过程提供了更大的灵活性和控制力。</p>
+<p>在进行go build时传递此标志时，可以拦截诸如编译（compile）、汇编（asm）和链接（link）等命令的执行流程，这些命令是Golang编译过程中所必需的。这些命令在Golang中通常被称为工具链。</p>
+<h2 id=skwwalking-go>Skwwalking-Go</h2>
+<p>Skwwalking-Go，就巧妙地利用了编译劫持来实现一些独特的功能。</p>
+<p>Skwwalking-Go是一个针对SkyWalking APM的Go语言客户端，它能够将应用程序的性能数据发送到SkyWalking后端进行监控和分析。在这个项目中，编译劫持被用来实现自动化的性能监控，而无需修改应用程序的源代码。</p>
+<p>Skwwalking-Go利用go build -toolexec功能，编写了一个自定义的编译插件，用于在每个编译过程中注入性能监控相关的代码。这样，当应用程序被编译时，监控代码会被自动插入到目标二进制文件中，从而实现了性能监控的自动化。</p>
+<h3 id=简单例子>简单例子</h3>
+<ol>
+<li>安装agent
+<a href=https://skywalking.apache.org/downloads/#GoAgent title=GoAgent rel="noopener external nofollow noreferrer" target=_blank class=exturl>
+GoAgent
+<i class="fa fa-external-link-alt"></i>
+</a></li>
+<li>引入项目（直接在程序入口<code>main.go</code>导入包）</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#f92672>import</span> <span style=color:#a6e22e>_</span> <span style=color:#e6db74>&#34;github.com/apache/skywalking-go&#34;</span>
+</code></pre></div><ol start=3>
+<li>编译代码</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell>go build -toolexec<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;/path/to/go-agent&#34;</span> -a
+</code></pre></div><h1 id=隐形链接>隐形链接</h1>
+<p>除了编译劫持，Golang还拥有另一项神秘的黑魔法：隐形链接（Linkname）。隐形链接允许开发者在Go语言中访问和调用私有（未导出）的函数、方法或变量，这些私有成员在正常情况下是无法被外部包直接访问的。通过隐形链接，开发者可以在需要的情况下，绕过封装，直接访问和调用私有成员，从而实现更灵活和强大的功能。</p>
+<h2 id=应用场景>应用场景</h2>
+<p>隐形链接的应用场景非常广泛，特别是在一些需要底层优化或扩展功能的情况下。例如，一些性能优化库可能需要直接访问数据结构的内部字段，以提高访问速度；又或者在一些测试场景下，我们希望能够访问和修改私有成员，以便更好地进行测试。</p>
+<h2 id=使用方法>使用方法</h2>
+<p>要使用隐形链接，我们需要在代码中使用特殊的注释标记//go:linkname，并提供一个导出的函数，作为对私有成员的“代理”。通过这种方式，我们可以在编译时告诉编译器，将我们的导出函数链接到目标私有成员上。
+<code>go:linkname</code>语法如下</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#75715e>//go:linkname localname [importpath.name]
+</span></code></pre></div><ul>
+<li>localname 是当前包中的导出标识符，用于与私有标识符关联。</li>
+<li>[importpath.name] 是私有标识符的完全限定名，即其包的导入路径和标识符名。</li>
+</ul>
+<p>我的一个项目就用到了这个强大的功能，在这之前我是复制第三方包的内容放进自己的项目，当发现后马上更改了使用<code>linkname</code>去实现。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-go data-lang=go><span style=color:#75715e>//go:linkname Parse github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule.Parse
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Parse</span>(<span style=color:#a6e22e>tmpl</span> <span style=color:#66d9ef>string</span>) (<span style=color:#a6e22e>Compiler</span>, <span style=color:#66d9ef>error</span>)
+</code></pre></div><p>这段代码使用了go:linkname指令，将当前包中的Parse函数与github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule包中的Parse函数关联起来。这样，当在当前包的代码中调用Parse函数时，实际上会被链接到github.com/grpc-ecosystem/grpc-gateway/v2/internal/httprule包中的Parse函数，而不是当前包中的定义。
+具体的使用可以参照我的项目
+<a href=https://github.com/lemon-1997/dynamic-grpc title=dynamic-grpc rel="noopener external nofollow noreferrer" target=_blank class=exturl>
+dynamic-grpc
+<i class="fa fa-external-link-alt"></i>
+</a>。</p>
+<h1 id=总结>总结</h1>
+<p>在本文中，我们深入探讨了Golang中两项神秘而强大的黑魔法：编译劫持和隐形链接。</p>
+<ul>
+<li>
+<p>编译劫持：通过go build -toolexec标志，开发者可以在编译过程中插入自定义的逻辑，以实现各种高级功能。我们通过Skwwalking-Go项目的实例，展示了如何利用编译劫持实现自动化的性能监控，从而为应用程序增加了灵活性和控制力。</p>
+</li>
+<li>
+<p>隐形链接：通过go:linkname指令，我们可以在Go代码中访问和调用其他包中的私有函数、方法或变量。这种技术使得我们可以绕过封装，直接访问私有成员，从而实现更灵活和强大的功能。我们通过示例展示了如何使用go:linkname将当前包中的导出函数与其他包中的私有函数关联起来，实现对私有函数的直接调用。</p>
+</li>
+</ul>
+<p>这两种黑魔法为Golang开发者提供了更多的可能性和灵活性，使得我们能够更好地控制和定制我们的应用程序。深入理解和熟练运用这些技术，将有助于我们提高代码的效率和质量，从而更好地应对复杂的开发需求。</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/go>
+go
+</a>
+<a href=/tags/%e9%bb%91%e9%ad%94%e6%b3%95>
+黑魔法
+</a>
+<a href=/tags/%e7%bc%96%e8%af%91%e5%8a%ab%e6%8c%81>
+编译劫持
+</a>
+<a href=/tags/%e9%9a%90%e5%bd%a2%e9%93%be%e6%8e%a5>
+隐形链接
+</a>
+</div>
+<div class=addthis_inline_share_toolbox style=text-align:center></div>
+<hr>
+<div class=post-nav>
+<div class="post-nav-next post-nav-item">
+</div>
+<div class="post-nav-prev post-nav-item">
+<a href=/post/project-grpc-5.html rel=prev title=动态gRPC-HTTP代理（五）：代理>
+动态gRPC-HTTP代理（五）：代理
+<i class="fa fa-chevron-right"></i>
+</a>
+</div>
+</div>
+</footer>
+</article>
+</div>
+<div id=comments class=post-comments>
+<div class=comment-head>
+<div class=comment-headline>
+<i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span>
+</div>
+<div class=comment-switch>
+<span class=first-comment>Utterances</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span>
+</div>
+</div>
+<div class=comment-wrap>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=utterances-container></div>
+</div>
+<div><div class=comment-loading>
+<i class="fa fa-sync fa-spin"></i>
+</div><div class=waline-container></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class=footer>
+<div class=footer-inner>
+<div id=gtranslate class=google-translate>
+<i class="fa fa-language"></i>
+<div id=google_translate_element></div>
+</div>
+<div class=copyright>
+&copy;
+<span itemprop=copyrightYear>
+2022 - 2024
+</span>
+<span class=with-love>
+<i class="fa fa-lemon"></i>
+</span>
+<span class=author itemprop=copyrightHolder>lemon</span>
+</div>
+</div>
+</footer>
+<script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
+<script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":false},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://lemon-1997.github.io/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"utterances":{"cfg":{"issueterm":"pathname","label":"comments","repo":"lemon-1997/lemon-1997.github.io","theme":"preferred-color-scheme"},"js":"https://utteranc.es/client.js"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":"https://waline-blue-nu.vercel.app/","sofa":"快来发表你的意见吧","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script>
+<script type=text/javascript src=/js/main.min.63932a6e8faa0bb69dd7b4369aa7e5a1e84c66c5561c6a2ea11eb365a2ea549e.js defer></script>
+</body>
+</html>
