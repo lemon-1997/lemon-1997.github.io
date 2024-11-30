@@ -1,4 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><search><entry><title>gRPC Metadata的误解</title><url>/post/source-metadata.html</url><categories><category>源码分析</category></categories><tags><tag>go</tag><tag>gRPC</tag><tag>Metadata</tag></tags><content type="html"><![CDATA[最近在处理线上问题时，我遇到一个与 gRPC Metadata 相关的困惑。起初，我以为在 gRPC 请求中，metadata 中相同的 key 会发生覆盖，但实际情况并非如此。相同的 key 并不会覆盖前一个值，反而会形成一个数组，就像 HTTP header 的设计一样。这一现象在初次遇到时并不明显，为了弄清楚其中的原理，我决定深入源码进行分析，最终发现了其中的细节并排查出了导致问题的根源。
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><search><entry><title>Kratos：Go微服务框架的优秀设计</title><url>/post/frame-kratos.html</url><categories><category>框架教程</category></categories><tags><tag>go</tag><tag>Kratos</tag><tag>微服务</tag></tags><content type="html">在现代微服务架构的浪潮中，开发者面临着越来越高的性能要求和复杂的系统设计挑战。Go 语言凭借其高效、轻量级的特性，成为了构建微服务的热门选择。而 Kratos 作为一款 Go 开发的微服务框架，以其模块化、易扩展、和高性能的设计，迅速吸引了大量开发者的关注。 在本文中，我们将从框架设计的角度，剖析 Kratos 的优秀特性和设计理念。
+Kratos使用了快两年，在我看来，它是目前 Go 生态中最优秀的微服务框架，毋庸置疑。有人认为 Kratos 入门门槛高，其实不然。相比那些“大包大揽”的微服务框架，Kratos 的设计更加简洁明了、易于上手。接下来，我会讲几个Kratos的优秀设计。
+设计 标准化接口 Kratos 的最大亮点在于其 标准化设计。框架抽象了众多核心接口，并严格遵循业界公认的标准，而不是自定义属于 Kratos 的专有接口。这种设计让 Kratos 更加开放、易用，同时便于开发者理解和扩展。
+以 API 定义 为例，Kratos 直接采用了 Protobuf 作为 API 的标准定义格式。通过 Protobuf，不仅可以生成 HTTP 和 gRPC 服务端及客户端代码，还通过 gRPC-gateway 的注解语法生成对应的 HTTP 路由和处理逻辑。这种设计没有引入自定义规范，而是使用了开发者熟悉且广泛认可的工具链和标准，实现了简单与高效的统一。
+另一个典型例子是 中间件设计。Kratos 对 HTTP 和 gRPC 进行了抽象，包括但不限于请求头、编码、解码等，使这两种协议可以实现统一处理。得益于这种抽象，Kratos 的中间件可以同时支持 HTTP 和 gRPC。换句话说，开发者只需要编写一次中间件代码，就可以应用到两个协议的服务中。比如官方的 log、trace、metrics 等中间件，通过这种统一设计展现出极高的优雅性和实用性。
+不仅如此，Kratos 在 客户端设计 上也延续了这种标准化理念。例如，生成的客户端代码是基于接口的，这意味着切换协议非常容易。有一次，我需要将一个 gRPC 请求切换为 HTTP，只修改了几行配置代码便完成了迁移，这种体验在传统框架中几乎无法想象。
+当然，这种标准化设计不仅体现在 transport（或称 server）模块，还覆盖了 Kratos 的其他核心模块，如服务注册、配置管理等。开发者既可以直接使用官方提供的实现，也可以基于框架的抽象接口接入自定义实现，灵活性极高。
+总的来说，Kratos 的标准化设计大幅降低了框架的使用门槛，同时提升了扩展性和可维护性。这种开放且兼容业界标准的设计理念，不仅彰显了 Kratos 的深厚功底，更为微服务框架树立了优秀的设计典范。
+DDD Kratos 的另一个亮点是其 项目结构设计。官方提供的模板 Kratos-layout 是一个优秀的实践范例，它不仅是一个简单的参考例子，更是结合了 DDD（领域驱动设计） 和 Clean Architecture 等现代设计理念的结晶。虽然 Kratos 不强制要求使用固定的项目结构，例如你可以选择传统的 MVC 模式，但在使用 Kratos 时，采用 Kratos-layout 通常是更高效、更合理的选择。
+Kratos-layout 的设计特点 高内聚，低耦合
+Kratos-layout 最大的特点是模块间的高内聚与低耦合。例如，biz 层完全独立于其他层，采用依赖倒置的设计原则。这种分层让 biz 层可以独立运行，且与具体的存储实现、接口展示完全解耦。
+领域模型独立
+biz 层通过定义 领域模型（domain） 来承载项目的核心业务逻辑，而这些领域模型与数据表结构或传输层结构完全无关。它们是对业务的抽象，贯穿于整个项目的各个层次，体现了项目的核心价值。
+清晰的代码组织
+在 Kratos-layout 中，各个层的职责边界非常明确：
+api：存放 API 定义文件（如 .proto），用于生成 HTTP 和 gRPC 的代码。 biz：业务逻辑层，聚焦领域逻辑，完全独立于框架和外部依赖。 data：数据访问层，负责与数据库、缓存等外部系统交互，具体实现通过接口注入到 biz 层中。 service：服务层，承载与外部接口交互的逻辑，主要处理 HTTP 和 gRPC 的输入输出。 实践中的体会 刚开始接触 Kratos-layout 时，可能会觉得它过于复杂。例如，为了实现结构的解耦，需要额外编写大量代码来进行层间的数据转换，这似乎显得繁琐甚至“无意义”。但随着业务的复杂度增加，这种结构的优势会逐渐显现：
+独立的领域模型
+将业务逻辑与具体的数据表结构剥离，独立于 biz 层，使得业务逻辑更加清晰、独立且易于维护。
+例如，一个复杂的业务流程可能涉及多张表或多个 API 调用，但在 biz 层只需要处理与领域模型相关的逻辑，极大地减少了耦合。 增强的可维护性与可拓展性
+由于各层职责明确且高度独立，新增或修改某一模块的功能时，对其他模块的影响极小。尤其是 domain 层的抽离，使得领域模型在业务不断迭代中始终保持稳定，而不是被迫随具体实现频繁调整。
+业务逻辑清晰
+当你逐渐熟悉 DDD 的理念，并掌握如何清晰地定义 domain 和聚合根，你会发现，即使面对再复杂的业务逻辑，阅读 biz 层代码时依然非常轻松。因为这一层代码直接映射业务规则，而不会被框架实现细节所干扰。
+一个实际例子 假设你有一个订单系统，涉及用户下单、库存扣减、支付处理等逻辑：
+在 biz 层，你的 Order 聚合根会定义清晰的业务行为（如 PlaceOrder 和 CancelOrder），完全独立于数据库表和外部服务。 在 data 层，具体实现如数据库操作和库存服务调用通过接口注入到 biz 层。 在 service 层，只负责将 HTTP 或 gRPC 请求转为领域模型的输入，然后调用 biz 层的方法。 总结 Kratos-layout 的结构设计不仅实现了高内聚、低耦合，还帮助开发者养成良好的代码组织习惯，尤其在复杂业务场景下，能够显著提高代码的可维护性和可扩展性。虽然初次接触时需要一定的适应时间，但随着业务复杂度的增加，你会越来越体会到这种设计的优雅与强大。Kratos-layout 并不是简单的项目模板，它是一种能够持续引导你编写更清晰、更专业代码的架构指导。
+生态（社区） 这一点虽然不直接涉及 Kratos 的设计本身，但仍值得一提：Kratos 官方对开发者体验的优化极为用心。
+官方实现与社区贡献 Kratos 官方为大多数核心接口都提供了默认实现，使开发者无需从零开始实现这些接口，大大降低了框架的使用门槛。只有在某些特定场景或不常见需求下，开发者才需要自行实现接口。而且 Kratos 社区非常活跃，许多开发者会提交代码来支持常用的工具或框架，例如不同的数据库驱动、服务注册中心、配置管理工具等，这极大地丰富了 Kratos 的生态，进一步减少了使用者的开发时间。
+丰富的官方示例 Kratos 官方还提供了两个非常实用的资源：
+examples 项目
+包含了大量简单易懂的例子，覆盖框架的核心功能模块。 开发者可以快速参考这些示例，轻松上手实际开发。 beer-shop 微服务实战项目
+这是一个完整的微服务实践项目，从服务拆分、接口设计到实现，提供了一整套解决方案。 开发者不仅能学习到 Kratos 的使用方式，还能理解微服务开发的最佳实践。 小结 如果你正在寻找一个现代化、高效、易用的微服务框架，Kratos 无疑是一个值得尝试的优秀选择。</content></entry><entry><title>gRPC Metadata的误解</title><url>/post/source-metadata.html</url><categories><category>源码分析</category></categories><tags><tag>go</tag><tag>gRPC</tag><tag>Metadata</tag></tags><content type="html"><![CDATA[最近在处理线上问题时，我遇到一个与 gRPC Metadata 相关的困惑。起初，我以为在 gRPC 请求中，metadata 中相同的 key 会发生覆盖，但实际情况并非如此。相同的 key 并不会覆盖前一个值，反而会形成一个数组，就像 HTTP header 的设计一样。这一现象在初次遇到时并不明显，为了弄清楚其中的原理，我决定深入源码进行分析，最终发现了其中的细节并排查出了导致问题的根源。
 问题背景 先看下发生问题的代码
 import ( &#34;context&#34; mmd &#34;google.golang.org/grpc/metadata&#34; &#34;google.golang.org/protobuf/types/known/emptypb&#34; ) func metadataPass(ctx context.Context) { var i int for { i++ ctx = mmd.AppendToOutgoingContext(ctx, &#34;test&#34;, i) res, _ := client.SayHello(ctx, &amp;emptypb.Empty{}) } return } 代码很简单，就是在一个循环中，每次发起gRPC请求前都调用AppendToOutgoingContext添加键值对， 看起来没啥问题，因为metadata的go源码实现是依靠于context，而context如果是相同key则会覆盖，这就导致写这段代码时顺利成章的认为这样使用是没问题的。
 排查过程 定位问题其实是比较快的，出于好奇，决定看下metadata的源码实现。 先看下AppendToOutgoingContext具体做了什么

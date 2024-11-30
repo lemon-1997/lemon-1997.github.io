@@ -8,34 +8,34 @@
 <link rel=icon type=image/png sizes=16x16 href=/imgs/icons/lemon.ico>
 <link rel=icon type=image/png sizes=32x32 href=/imgs/icons/lemon.ico>
 <link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/lemon.ico>
-<meta itemprop=name content="动态gRPC-HTTP代理（一）：设计">
-<meta itemprop=description content="调研gRPC-HTTP代理，设计自己的代理插件">
+<meta itemprop=name content="Kratos：Go微服务框架的优秀设计">
+<meta itemprop=description content="细数Kratos那些优秀的设计">
 <meta itemprop=datePublished zgotmplz>
 <meta itemprop=dateModified zgotmplz>
 <meta itemprop=image content="https://lemon-1997.github.io/imgs/lemon.jpg">
-<meta itemprop=keywords content="go,grpc">
+<meta itemprop=keywords content="go,Kratos,微服务">
 <meta property="og:type" content="article">
-<meta property="og:title" content="动态gRPC-HTTP代理（一）：设计">
-<meta property="og:description" content="调研gRPC-HTTP代理，设计自己的代理插件">
+<meta property="og:title" content="Kratos：Go微服务框架的优秀设计">
+<meta property="og:description" content="细数Kratos那些优秀的设计">
 <meta property="og:image" content="/imgs/lemon.jpg">
 <meta property="og:image:width" content="312">
 <meta property="og:image:height" content="312">
 <meta property="og:image:type" content="image/jpeg/png/svg/jpg">
-<meta property="og:url" content="https://lemon-1997.github.io/post/project-grpc.html">
+<meta property="og:url" content="https://lemon-1997.github.io/post/frame-kratos.html">
 <meta property="og:site_name" content="lemon blog">
 <meta property="og:locale" content="zh-CN">
 <meta property="article:author" content="lemon">
-<meta property="article:published_time" content="2023-11-25 23:30:00 +0800 +0800">
-<meta property="article:modified_time" content="2023-11-25 23:30:00 +0800 +0800">
+<meta property="article:published_time" content="2024-11-30 12:30:00 +0800 +0800">
+<meta property="article:modified_time" content="2024-11-30 12:30:00 +0800 +0800">
 <link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css>
 <link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css>
 <link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css>
 <link rel=stylesheet href=/css/main.min.efa32aea2ef196e07d21feb2e63b9bdc157ad7c6cdcd98f7d548d0360296aab8.css>
 <style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style>
 <script type=text/javascript>(function(){localDB={set:function(b,c,a){if(a===0)return;const d=new Date,e=a*864e5,f={value:c,expiry:d.getTime()+e};localStorage.setItem(b,JSON.stringify(f))},get:function(a){const b=localStorage.getItem(a);if(!b)return void 0;const c=JSON.parse(b),d=new Date;return d.getTime()>c.expiry?(localStorage.removeItem(a),void 0):c.value}},theme={active:function(){const a=localDB.get('theme');if(a==void 0)return;theme.toggle(a),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(a){theme.toggle(a.matches?'dark':'light')})},toggle:function(a){document.documentElement.setAttribute('data-theme',a),localDB.set('theme',a,2);const b=document.querySelector('iframe.giscus-frame');if(b){const c={setConfig:{theme:a}};b.contentWindow.postMessage({giscus:c},'https://giscus.app')}}},theme.active()})(window)</script>
-<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"project-grpc.html","permalink":"https://lemon-1997.github.io/post/project-grpc.html","title":"动态gRPC-HTTP代理（一）：设计","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
+<script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"frame-kratos.html","permalink":"https://lemon-1997.github.io/post/frame-kratos.html","title":"Kratos：Go微服务框架的优秀设计","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script>
 <script type=text/javascript>document.addEventListener('DOMContentLoaded',()=>{var a=document.createElement('script');a.charset="UTF-8",a.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",a.async=!1,a.defer=!0,document.head.appendChild(a),a.onload=function(){NexT.utils.fmtBusuanzi()}})</script>
-<title>动态gRPC-HTTP代理（一）：设计 - lemon blog</title>
+<title>Kratos：Go微服务框架的优秀设计 - lemon blog</title>
 <noscript>
 <link rel=stylesheet href=/css/noscript.css>
 </noscript>
@@ -128,13 +128,23 @@
 <div class="post-toc-wrap sidebar-panel">
 <div class="post-toc animated"><nav id=TableOfContents>
 <ul>
-<li><a href=#方案对比>方案对比</a></li>
-<li><a href=#整体结构>整体结构</a>
+<li><a href=#设计>设计</a>
 <ul>
-<li><a href=#reflect>reflect</a></li>
-<li><a href=#route>route</a></li>
-<li><a href=#codec>codec</a></li>
-<li><a href=#proxy>proxy</a></li>
+<li><a href=#标准化接口>标准化接口</a></li>
+<li><a href=#ddd>DDD</a>
+<ul>
+<li><a href=#kratos-layout-的设计特点><strong>Kratos-layout 的设计特点</strong></a></li>
+<li><a href=#实践中的体会><strong>实践中的体会</strong></a></li>
+<li><a href=#一个实际例子><strong>一个实际例子</strong></a></li>
+<li><a href=#总结><strong>总结</strong></a></li>
+</ul>
+</li>
+<li><a href=#生态社区>生态（社区）</a>
+<ul>
+<li><a href=#官方实现与社区贡献><strong>官方实现与社区贡献</strong></a></li>
+<li><a href=#丰富的官方示例><strong>丰富的官方示例</strong></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href=#小结>小结</a></li>
@@ -246,7 +256,7 @@
 <div class="main-inner post posts-expand">
 <div class=post-block>
 <article itemscope itemtype=http://schema.org/Article class=post-content lang>
-<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/project-grpc.html>
+<link itemprop=mainEntityOfPage href=https://lemon-1997.github.io/post/frame-kratos.html>
 <span hidden itemprop=author itemscope itemtype=http://schema.org/Person>
 <meta itemprop=image content="/imgs/lemon.jpg">
 <meta itemprop=name content="lemon">
@@ -256,11 +266,11 @@
 <meta itemprop=description content="simple is better">
 </span>
 <span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork>
-<meta itemprop=name content="动态gRPC-HTTP代理（一）：设计">
-<meta itemprop=description content="调研gRPC-HTTP代理，设计自己的代理插件">
+<meta itemprop=name content="Kratos：Go微服务框架的优秀设计">
+<meta itemprop=description content="细数Kratos那些优秀的设计">
 </span>
 <header class=post-header>
-<h1 class=post-title itemprop="name headline">动态gRPC-HTTP代理（一）：设计 </h1>
+<h1 class=post-title itemprop="name headline">Kratos：Go微服务框架的优秀设计 </h1>
 <div class=post-meta-container>
 <div class=post-meta-items>
 <span class=post-meta-item>
@@ -268,7 +278,7 @@
 <i class="far fa-calendar"></i>
 </span>
 <span class=post-meta-item-text>发表于：</span>
-<time title="发表于：2023-11-25 23:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2023-11-25 23:30:00 +0800 +0800">2023-11-25</time>
+<time title="发表于：2024-11-30 12:30:00 +0800 +0800" itemprop="dateCreated datePublished" datetime="2024-11-30 12:30:00 +0800 +0800">2024-11-30</time>
 </span>
 <span class=post-meta-item>
 <span class=post-meta-item-icon>
@@ -276,8 +286,8 @@
 </span>
 <span class=post-meta-item-text>分类于：</span>
 <span itemprop=about itemscope itemtype=http://schema.org/Thing>
-<a href=/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98 itemprop=url rel=index>
-<span itemprop=name>项目实战</span>
+<a href=/categories/%E6%A1%86%E6%9E%B6%E6%95%99%E7%A8%8B itemprop=url rel=index>
+<span itemprop=name>框架教程</span>
 </a>
 </span>
 </span>
@@ -287,14 +297,14 @@
 <span class=post-meta-item-icon>
 <i class="far fa-file-word"></i>
 </span>
-<span class=post-meta-item-text>字数：</span><span>1250</span>
+<span class=post-meta-item-text>字数：</span><span>2612</span>
 </span>
 <span class=post-meta-item title=阅读>
 <span class=post-meta-item-icon>
 <i class="far fa-clock"></i>
 </span>
 <span class=post-meta-item-text>阅读：&ap;</span>
-<span>3分钟</span>
+<span>6分钟</span>
 </span>
 <span class=post-meta-item title=浏览>
 <span class=post-meta-item-icon>
@@ -303,7 +313,7 @@
 <span class=post-meta-item-text>
 浏览：
 </span>
-<span class=waline-pageview-count data-path=/post/project-grpc.html>
+<span class=waline-pageview-count data-path=/post/frame-kratos.html>
 <i class="fa fa-sync fa-spin"></i>
 </span>
 </span>
@@ -314,7 +324,7 @@
 <span class=post-meta-item-text>
 评论：
 </span>
-<span class=waline-comment-count data-path=/post/project-grpc.html>
+<span class=waline-comment-count data-path=/post/frame-kratos.html>
 <i class="fa fa-sync fa-spin"></i>
 </span>
 </span>
@@ -322,96 +332,112 @@
 </div>
 </header>
 <div class="post-body autonumber" itemprop=articleBody>
-<p>在当前主流的微服务架构中，许多公司选择使用gRPC协议作为内部通信机制。然而，在与外部系统进行交互时，HTTP仍然是不可或缺的协议。为了解决这一问题，常见的解决方案是采用grpc-gateway或其他网关自带的插件进行协议转换。但是，这些方案都存在一个共同的痛点：每次更新服务都需要手动更新proto或pb文件，并重新配置网关，这给开发者带来了不小的麻烦。因此，我们迫切需要一个不依赖于proto文件、能够动态感知gRPC服务的插件，以简化这一流程并提高开发效率。本文将探讨这一问题的背景、现有解决方案的局限性，以及我们所期望的理想插件应具备的特性。</p>
-<p>首先，我们要搞清楚为什么需要proto，我们知道，<code>gRPC</code>底层是<code>HTTP2</code>，
-理论上来说，我们收到客户端的HTTP请求，是可以升级成HTTP2再调用后台服务，
-但问题是<code>gRPC</code>是以proto协议进行传输，当我们收到参数，却不知道后台服务的proto协议（proto文件定义了字段已经字段的顺序），
-我们无法将其序列化，所以我们必须知道调用方法的proto定义。</p>
-<h1 id=方案对比>方案对比</h1>
-<p>目前来讲，大体上有以下几种方式实现</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>优点</th>
-<th>缺点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>同时提供gRPC,HTTP服务</td>
-<td>无需做HTTP的转换，可直接暴露服务</td>
-<td>有些项目可能不好拓展，需要调整增加代码</td>
-</tr>
-<tr>
-<td>grpc-gateway</td>
-<td>直接生成HTTP代码，无需额外编写</td>
-<td>服务更新需要更新gateway插件</td>
-</tr>
-<tr>
-<td>protoreflect</td>
-<td>利用gRPC反射，不依赖proto文件</td>
-<td>需要注册反射服务</td>
-</tr>
-<tr>
-<td>HTTP2</td>
-<td>简单，设置content-type为json直接透传grpc</td>
-<td>牺牲了gRPC的优点（proto）</td>
-</tr>
-</tbody>
-</table>
+<p>在现代微服务架构的浪潮中，开发者面临着越来越高的性能要求和复杂的系统设计挑战。Go 语言凭借其高效、轻量级的特性，成为了构建微服务的热门选择。而 Kratos 作为一款 Go 开发的微服务框架，以其模块化、易扩展、和高性能的设计，迅速吸引了大量开发者的关注。 在本文中，我们将从框架设计的角度，剖析 Kratos 的优秀特性和设计理念。</p>
+<p>Kratos使用了快两年，在我看来，它是目前 Go 生态中最优秀的微服务框架，毋庸置疑。有人认为 Kratos 入门门槛高，其实不然。相比那些“大包大揽”的微服务框架，Kratos 的设计更加简洁明了、易于上手。接下来，我会讲几个Kratos的优秀设计。</p>
+<h1 id=设计>设计</h1>
+<h2 id=标准化接口>标准化接口</h2>
+<p>Kratos 的最大亮点在于其 <strong>标准化设计</strong>。框架抽象了众多核心接口，并严格遵循业界公认的标准，而不是自定义属于 Kratos 的专有接口。这种设计让 Kratos 更加开放、易用，同时便于开发者理解和扩展。</p>
+<p>以 <strong>API 定义</strong> 为例，Kratos 直接采用了 Protobuf 作为 API 的标准定义格式。通过 Protobuf，不仅可以生成 <code>HTTP</code> 和 <code>gRPC</code> 服务端及客户端代码，还通过 <code>gRPC-gateway</code> 的注解语法生成对应的 HTTP 路由和处理逻辑。这种设计没有引入自定义规范，而是使用了开发者熟悉且广泛认可的工具链和标准，实现了简单与高效的统一。</p>
+<p>另一个典型例子是 <strong>中间件设计</strong>。Kratos 对 <code>HTTP</code> 和 <code>gRPC</code> 进行了抽象，包括但不限于请求头、编码、解码等，使这两种协议可以实现统一处理。得益于这种抽象，Kratos 的中间件可以同时支持 <code>HTTP</code> 和 <code>gRPC</code>。换句话说，开发者只需要编写一次中间件代码，就可以应用到两个协议的服务中。比如官方的 <code>log</code>、<code>trace</code>、<code>metrics</code> 等中间件，通过这种统一设计展现出极高的优雅性和实用性。</p>
+<p>不仅如此，Kratos 在 <strong>客户端设计</strong> 上也延续了这种标准化理念。例如，生成的客户端代码是基于接口的，这意味着切换协议非常容易。有一次，我需要将一个 <code>gRPC</code> 请求切换为 <code>HTTP</code>，只修改了几行配置代码便完成了迁移，这种体验在传统框架中几乎无法想象。</p>
+<p>当然，这种标准化设计不仅体现在 <code>transport</code>（或称 <code>server</code>）模块，还覆盖了 Kratos 的其他核心模块，如服务注册、配置管理等。开发者既可以直接使用官方提供的实现，也可以基于框架的抽象接口接入自定义实现，灵活性极高。</p>
+<p>总的来说，Kratos 的标准化设计大幅降低了框架的使用门槛，同时提升了扩展性和可维护性。这种开放且兼容业界标准的设计理念，不仅彰显了 Kratos 的深厚功底，更为微服务框架树立了优秀的设计典范。</p>
+<h2 id=ddd>DDD</h2>
+<p>Kratos 的另一个亮点是其 <strong>项目结构设计</strong>。官方提供的模板 <strong>Kratos-layout</strong> 是一个优秀的实践范例，它不仅是一个简单的参考例子，更是结合了 <code>DDD</code>（领域驱动设计） 和 <code>Clean Architecture</code> 等现代设计理念的结晶。虽然 Kratos 不强制要求使用固定的项目结构，例如你可以选择传统的 <code>MVC</code> 模式，但在使用 Kratos 时，采用 Kratos-layout 通常是更高效、更合理的选择。</p>
+<h3 id=kratos-layout-的设计特点><strong>Kratos-layout 的设计特点</strong></h3>
 <ol>
-<li>同时提供gRPC,HTTP服务，这种直接pass，如果选这种也不会有这篇文章。</li>
-<li>grpc-gateway，这其实是主流方案了，但是加个字段或者接口都得更新插件，很麻烦，很好奇google是如何解决的。</li>
-<li>protoreflect，这是这次选择的方案，利用反射我们能够动态获取proto定义，完美解决grpc-gateway的问题。</li>
-<li>HTTP2，不选择这个方案的原因是没有反射实现的有意思。</li>
+<li>
+<p><strong>高内聚，低耦合</strong><br>
+Kratos-layout 最大的特点是模块间的高内聚与低耦合。例如，<code>biz</code> 层完全独立于其他层，采用依赖倒置的设计原则。这种分层让 <code>biz</code> 层可以独立运行，且与具体的存储实现、接口展示完全解耦。</p>
+</li>
+<li>
+<p><strong>领域模型独立</strong><br>
+<code>biz</code> 层通过定义 <strong>领域模型（domain）</strong> 来承载项目的核心业务逻辑，而这些领域模型与数据表结构或传输层结构完全无关。它们是对业务的抽象，贯穿于整个项目的各个层次，体现了项目的核心价值。</p>
+</li>
+<li>
+<p><strong>清晰的代码组织</strong><br>
+在 Kratos-layout 中，各个层的职责边界非常明确：</p>
+<ul>
+<li><strong>api</strong>：存放 API 定义文件（如 <code>.proto</code>），用于生成 HTTP 和 gRPC 的代码。</li>
+<li><strong>biz</strong>：业务逻辑层，聚焦领域逻辑，完全独立于框架和外部依赖。</li>
+<li><strong>data</strong>：数据访问层，负责与数据库、缓存等外部系统交互，具体实现通过接口注入到 <code>biz</code> 层中。</li>
+<li><strong>service</strong>：服务层，承载与外部接口交互的逻辑，主要处理 HTTP 和 gRPC 的输入输出。</li>
+</ul>
+</li>
 </ol>
-<h1 id=整体结构>整体结构</h1>
-<h2 id=reflect>reflect</h2>
-<p>反射是项目的主要模块，核心功能是提供一个gRPC客户端，能够获取grpc服务的proto协议，
-根据proto协议动态调用grpc，随时监听grpc服务变化，如果服务重新更新了，就必须重新读取proto协议</p>
-<h2 id=route>route</h2>
-<p>路由的主要功能是将proto定义的HTTP路径
-<a href=https://github.com/googleapis/googleapis/blob/master/google/api/http.proto#L46 title="<code>google.api.http</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>
-<code>google.api.http</code>
-<i class="fa fa-external-link-alt"></i>
-</a>，
-匹配出grpc对应的method</p>
-<h2 id=codec>codec</h2>
-<p>编解码模块，功能是HTTP参数与grpc proto二进制的转换，
-编码支持json,query,path,form,xml,html转化成proto，
-解码目前仅支持proto到json的转换</p>
-<h2 id=proxy>proxy</h2>
-<p>提供HTTP服务，代理请求，路由转发并调用grpc服务，参数处理（content-type），结果返回（json），错误解析（grpc status）等等</p>
+<h3 id=实践中的体会><strong>实践中的体会</strong></h3>
+<p>刚开始接触 Kratos-layout 时，可能会觉得它过于复杂。例如，为了实现结构的解耦，需要额外编写大量代码来进行层间的数据转换，这似乎显得繁琐甚至“无意义”。但随着业务的复杂度增加，这种结构的优势会逐渐显现：</p>
+<ol>
+<li>
+<p><strong>独立的领域模型</strong><br>
+将业务逻辑与具体的数据表结构剥离，独立于 <code>biz</code> 层，使得业务逻辑更加清晰、独立且易于维护。</p>
+<ul>
+<li>例如，一个复杂的业务流程可能涉及多张表或多个 API 调用，但在 <code>biz</code> 层只需要处理与领域模型相关的逻辑，极大地减少了耦合。</li>
+</ul>
+</li>
+<li>
+<p><strong>增强的可维护性与可拓展性</strong><br>
+由于各层职责明确且高度独立，新增或修改某一模块的功能时，对其他模块的影响极小。尤其是 <code>domain</code> 层的抽离，使得领域模型在业务不断迭代中始终保持稳定，而不是被迫随具体实现频繁调整。</p>
+</li>
+<li>
+<p><strong>业务逻辑清晰</strong><br>
+当你逐渐熟悉 DDD 的理念，并掌握如何清晰地定义 <code>domain</code> 和聚合根，你会发现，即使面对再复杂的业务逻辑，阅读 <code>biz</code> 层代码时依然非常轻松。因为这一层代码直接映射业务规则，而不会被框架实现细节所干扰。</p>
+</li>
+</ol>
+<h3 id=一个实际例子><strong>一个实际例子</strong></h3>
+<p>假设你有一个订单系统，涉及用户下单、库存扣减、支付处理等逻辑：</p>
+<ul>
+<li>在 <code>biz</code> 层，你的 <code>Order</code> 聚合根会定义清晰的业务行为（如 <code>PlaceOrder</code> 和 <code>CancelOrder</code>），完全独立于数据库表和外部服务。</li>
+<li>在 <code>data</code> 层，具体实现如数据库操作和库存服务调用通过接口注入到 <code>biz</code> 层。</li>
+<li>在 <code>service</code> 层，只负责将 HTTP 或 gRPC 请求转为领域模型的输入，然后调用 <code>biz</code> 层的方法。</li>
+</ul>
+<h3 id=总结><strong>总结</strong></h3>
+<p>Kratos-layout 的结构设计不仅实现了高内聚、低耦合，还帮助开发者养成良好的代码组织习惯，尤其在复杂业务场景下，能够显著提高代码的可维护性和可扩展性。虽然初次接触时需要一定的适应时间，但随着业务复杂度的增加，你会越来越体会到这种设计的优雅与强大。Kratos-layout 并不是简单的项目模板，它是一种能够持续引导你编写更清晰、更专业代码的架构指导。</p>
+<h2 id=生态社区>生态（社区）</h2>
+<p>这一点虽然不直接涉及 Kratos 的设计本身，但仍值得一提：<strong>Kratos 官方对开发者体验的优化极为用心</strong>。</p>
+<h3 id=官方实现与社区贡献><strong>官方实现与社区贡献</strong></h3>
+<p>Kratos 官方为大多数核心接口都提供了默认实现，使开发者无需从零开始实现这些接口，大大降低了框架的使用门槛。只有在某些特定场景或不常见需求下，开发者才需要自行实现接口。而且 Kratos 社区非常活跃，许多开发者会提交代码来支持常用的工具或框架，例如不同的数据库驱动、服务注册中心、配置管理工具等，这极大地丰富了 Kratos 的生态，进一步减少了使用者的开发时间。</p>
+<h3 id=丰富的官方示例><strong>丰富的官方示例</strong></h3>
+<p>Kratos 官方还提供了两个非常实用的资源：</p>
+<ol>
+<li>
+<p><strong><code>examples</code> 项目</strong></p>
+<ul>
+<li>包含了大量简单易懂的例子，覆盖框架的核心功能模块。</li>
+<li>开发者可以快速参考这些示例，轻松上手实际开发。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>beer-shop</code> 微服务实战项目</strong></p>
+<ul>
+<li>这是一个完整的微服务实践项目，从服务拆分、接口设计到实现，提供了一整套解决方案。</li>
+<li>开发者不仅能学习到 Kratos 的使用方式，还能理解微服务开发的最佳实践。</li>
+</ul>
+</li>
+</ol>
 <h1 id=小结>小结</h1>
-<p>这是第一篇文章，主要是总体的设计思路，目前只写了简单的demo，项目还没开始写，后续的设计可能还会有所变动，
-后面可能还会有四篇文章讲述具体实现细节，每完成一个模块可能就会更新一篇文章。
-项目源码
-<a href=https://github.com/lemon-1997/dynamic-grpc title=https://github.com/lemon-1997/dynamic-grpc rel="noopener external nofollow noreferrer" target=_blank class=exturl>
-https://github.com/lemon-1997/dynamic-grpc
-<i class="fa fa-external-link-alt"></i>
-</a></p>
+<p>如果你正在寻找一个现代化、高效、易用的微服务框架，Kratos 无疑是一个值得尝试的优秀选择。</p>
 </div>
 <footer class=post-footer>
 <div class=post-tags>
 <a href=/tags/go>
 go
 </a>
-<a href=/tags/grpc>
-grpc
+<a href=/tags/kratos>
+Kratos
+</a>
+<a href=/tags/%e5%be%ae%e6%9c%8d%e5%8a%a1>
+微服务
 </a>
 </div>
 <div class=addthis_inline_share_toolbox style=text-align:center></div>
 <hr>
 <div class=post-nav>
 <div class="post-nav-next post-nav-item">
-<a href=/post/project-grpc-2.html rel=next title=动态gRPC-HTTP代理（二）：反射>
-<i class="fa fa-chevron-left"></i> 动态gRPC-HTTP代理（二）：反射
-</a>
 </div>
 <div class="post-nav-prev post-nav-item">
-<a href=/post/frame-weaver-5.html rel=prev title=Google分布式框架Weaver（五）：实现自己的部署器>
-Google分布式框架Weaver（五）：实现自己的部署器
+<a href=/post/source-metadata.html rel=prev title="gRPC Metadata的误解">
+gRPC Metadata的误解
 <i class="fa fa-chevron-right"></i>
 </a>
 </div>
